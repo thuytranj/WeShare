@@ -12,6 +12,19 @@ async function bootstrapWorker() {
   app.enableShutdownHooks();
 
   logger.log('WeShare Background Worker is running in standalone mode.');
+
+  // Keep event loop active until process receives termination signal
+  await new Promise<void>((resolve) => {
+    const keepAliveTimer = setInterval(() => {}, 1000 * 60 * 60);
+    const shutdown = () => {
+      clearInterval(keepAliveTimer);
+      resolve();
+    };
+    process.on('SIGINT', shutdown);
+    process.on('SIGTERM', shutdown);
+  });
+
+  await app.close();
 }
 
 bootstrapWorker();
