@@ -1,7 +1,33 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe, Logger } from '@nestjs/common';
+import { ValidationPipe, Logger, HttpStatus, ValidationError } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
+import { AppException, ErrorCode } from './common/exceptions';
+
+function formatValidationErrors(errors: ValidationError[]): { field: string; message: string }[] {
+  const result: { field: string; message: string }[] = [];
+  for (const error of errors) {
+    if (error.constraints) {
+      for (const key of Object.keys(error.constraints)) {
+        result.push({
+          field: error.property,
+          message: error.constraints[key],
+        });
+      }
+    }
+    if (error.children && error.children.length > 0) {
+      const childErrors = formatValidationErrors(error.children);
+      for (const child of childErrors) {
+        result.push({
+          field: `${error.property}.${child.field}`,
+          message: child.message,
+        });
+      }
+    }
+  }
+  return result;
+}
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
@@ -10,12 +36,24 @@ async function bootstrap() {
   // Global Prefix
   app.setGlobalPrefix('api/v1');
 
-  // Global Validation Pipe
+  // Global Exception Filter
+  app.useGlobalFilters(new GlobalExceptionFilter());
+
+  // Global Validation Pipe with structured exception factory
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
+      exceptionFactory: (validationErrors: ValidationError[] = []) => {
+        const errors = formatValidationErrors(validationErrors);
+        return new AppException(
+          ErrorCode.VALIDATION_ERROR,
+          'Validation failed',
+          HttpStatus.BAD_REQUEST,
+          errors,
+        );
+      },
     }),
   );
 
