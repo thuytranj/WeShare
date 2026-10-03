@@ -2,6 +2,7 @@ import axios from 'axios';
 import { apiClient } from './api.client';
 import {
   UserProfile,
+  PublicUserProfile,
   UpdateProfilePayload,
   CheckUsernameResponse,
   PresignedUrlResponse,
@@ -127,8 +128,8 @@ export const userService = {
    * GET /api/v1/users/:idOrUsername
    * Get public profile by user UUID or username handle
    */
-  async getPublicProfile(idOrUsername: string): Promise<UserProfile> {
-    const res = await apiClient.get<UserProfile>(
+  async getPublicProfile(idOrUsername: string): Promise<PublicUserProfile> {
+    const res = await apiClient.get<PublicUserProfile>(
       `/users/${encodeURIComponent(idOrUsername)}`,
     );
     return res.data;
