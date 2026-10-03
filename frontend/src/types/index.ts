@@ -1,1 +1,1 @@
-// Shared TypeScript interfaces and domain models
+export * from './auth.types';

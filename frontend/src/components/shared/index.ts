@@ -1,1 +1,1 @@
-// Composite shared widgets: Navbar, Sidebar, PostCard, CommentItem
+export * from './WeShareLogo';
