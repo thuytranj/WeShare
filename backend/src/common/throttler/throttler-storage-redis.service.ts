@@ -23,7 +23,8 @@ export class ThrottlerStorageRedis implements ThrottlerStorage {
     }
 
     const [incrErr, totalHits] = results[0] as [Error | null, number];
-    let [ttlErr, currentTtl] = results[1] as [Error | null, number];
+    const [ttlErr, rawTtl] = results[1] as [Error | null, number];
+    let currentTtl = rawTtl;
 
     if (incrErr) throw incrErr;
     if (ttlErr) throw ttlErr;

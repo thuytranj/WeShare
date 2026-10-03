@@ -15,7 +15,6 @@ describe('AuthService', () => {
   let service: AuthService;
   let usersService: jest.Mocked<UsersService>;
   let otpService: jest.Mocked<OtpService>;
-  let jwtService: jest.Mocked<JwtService>;
   let redisService: jest.Mocked<RedisService>;
   let refreshTokenRepository: any;
 
@@ -76,7 +75,6 @@ describe('AuthService', () => {
     service = module.get<AuthService>(AuthService);
     usersService = module.get(UsersService);
     otpService = module.get(OtpService);
-    jwtService = module.get(JwtService);
     redisService = module.get(RedisService);
     refreshTokenRepository = module.get(getRepositoryToken(RefreshToken));
   });

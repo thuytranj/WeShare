@@ -6,7 +6,9 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
   Index,
+  OneToOne,
 } from 'typeorm';
+import { UserProfile } from './user-profile.entity';
 
 export enum UserStatus {
   PENDING = 'PENDING',
@@ -70,4 +72,7 @@ export class User {
 
   @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp with time zone', nullable: true })
   deletedAt?: Date | null;
+
+  @OneToOne(() => UserProfile, (profile) => profile.user, { cascade: true })
+  profile?: UserProfile;
 }

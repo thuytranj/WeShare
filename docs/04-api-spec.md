@@ -74,11 +74,135 @@
 
 ### 2.2. Module Người dùng & Hồ sơ (Users & Profile)
 
+#### A. Danh mục Endpoints
+
 | Phương thức | Endpoint | Yêu cầu Auth | Mô tả |
 |---|---|:---:|---|
-| `GET` | `/api/v1/users/me` | Có | Lấy thông tin tài khoản & profile của chính mình |
-| `PATCH` | `/api/v1/users/me/profile` | Có | Cập nhật avatar, cover, bio, settings |
-| `GET` | `/api/v1/users/:username` | Tùy chọn | Xem hồ sơ công khai của một user |
+| `GET` | `/api/v1/users/me` | Có | Lấy thông tin tài khoản & profile đầy đủ của chính mình |
+| `PATCH` | `/api/v1/users/me` | Có | Cập nhật thông tin cá nhân (họ tên, username, bio, location, website, dob, gender) |
+| `GET` | `/api/v1/users/check-username` | Không | Kiểm tra tính khả dụng của username handle (`?username=...`) |
+| `GET` | `/api/v1/users/:idOrUsername` | Không | Xem hồ sơ công khai theo UUID hoặc username handle |
+| `POST` | `/api/v1/users/me/avatar/presigned-url` | Có | Lấy presigned URL upload ảnh đại diện (avatar) trực tiếp lên Supabase S3 |
+| `PUT` | `/api/v1/users/me/avatar` | Có | Cập nhật avatar URL và tự động xóa file avatar cũ trên S3 |
+| `DELETE` | `/api/v1/users/me/avatar` | Có | Xóa avatar về mặc định và dọn dẹp file trên S3 |
+| `POST` | `/api/v1/users/me/cover/presigned-url` | Có | Lấy presigned URL upload ảnh bìa (cover) trực tiếp lên Supabase S3 |
+| `PUT` | `/api/v1/users/me/cover` | Có | Cập nhật cover URL và tự động xóa ảnh bìa cũ trên S3 |
+| `DELETE` | `/api/v1/users/me/cover` | Có | Xóa ảnh bìa và dọn dẹp file trên S3 |
+
+#### B. Đặc tả Chi tiết Request & Response
+
+##### 1. `GET /api/v1/users/me`
+- **Mô tả**: Trả về dữ liệu tài khoản và profile cá nhân đầy đủ của user đang đăng nhập.
+- **Headers**: `Authorization: Bearer <jwt_access_token>`
+- **Response `200 OK`**:
+  ```json
+  {
+    "id": "a3ffb1c0-c841-6b9f-c6f9-07b743300000",
+    "email": "user@example.com",
+    "fullName": "Alex Morgan",
+    "username": "alex_morgan",
+    "bio": "Web developer & community builder",
+    "avatarUrl": "https://example.supabase.co/storage/v1/object/public/weshare-media/avatars/uuid.jpg",
+    "coverUrl": "https://example.supabase.co/storage/v1/object/public/weshare-media/covers/uuid.jpg",
+    "location": "Hà Nội, Việt Nam",
+    "website": "https://alex.dev",
+    "dateOfBirth": "1996-01-15",
+    "gender": "PREFER_NOT_TO_SAY",
+    "role": "USER",
+    "status": "ACTIVE",
+    "isEmailVerified": true,
+    "createdAt": "2026-09-20T10:00:00.000Z",
+    "updatedAt": "2026-09-21T12:00:00.000Z"
+  }
+  ```
+
+##### 2. `PATCH /api/v1/users/me`
+- **Mô tả**: Cập nhật thông tin profile. Nếu đổi username, hệ thống kiểm tra tính duy nhất trên `user_profiles (LOWER(username))`. Phát sự kiện `user.profile.updated` qua RabbitMQ.
+- **Headers**: `Authorization: Bearer <jwt_access_token>`
+- **Request Body**:
+  ```json
+  {
+    "fullName": "Alex Morgan",
+    "username": "alex_m",
+    "bio": "Passionate software engineer building WeShare communities.",
+    "location": "Hà Nội",
+    "website": "https://alex.dev",
+    "dateOfBirth": "1996-01-15",
+    "gender": "MALE"
+  }
+  ```
+- **Validation Rules**:
+  - `fullName`: string, độ dài 1-100 ký tự (tùy chọn)
+  - `username`: string, độ dài 3-30 ký tự, regex `^[a-zA-Z0-9_.-]{3,30}$` (tùy chọn, lưu chữ thường)
+  - `bio`: string, tối đa 500 ký tự (tùy chọn)
+  - `location`: string, tối đa 100 ký tự (tùy chọn)
+  - `website`: string, chuẩn URL HTTP/HTTPS, tối đa 255 ký tự (tùy chọn)
+  - `dateOfBirth`: string chuẩn ISO date `YYYY-MM-DD` (tùy chọn)
+  - `gender`: enum `MALE`, `FEMALE`, `OTHER`, `PREFER_NOT_TO_SAY` (tùy chọn)
+- **Response `200 OK`**: Trả về dữ liệu profile cập nhật (như `GET /me`).
+- **Mã lỗi thường gặp**:
+  - `400 Bad Request`: `VALIDATION_ERROR` (dữ liệu không đúng định dạng)
+  - `409 Conflict`: `USERNAME_ALREADY_EXISTS` (username đã có người dùng khác sử dụng)
+
+##### 3. `GET /api/v1/users/check-username?username=<handle>`
+- **Mô tả**: Kiểm tra nhanh username handle đã được đăng ký hay chưa.
+- **Yêu cầu Auth**: Không (Public)
+- **Query Params**: `username` (bắt buộc, 3-30 ký tự)
+- **Response `200 OK`**:
+  ```json
+  {
+    "username": "alex_m",
+    "available": true
+  }
+  ```
+
+##### 4. `GET /api/v1/users/:idOrUsername`
+- **Mô tả**: Lấy thông tin hồ sơ công khai của người dùng bằng UUID hoặc username handle. Truy vấn trực tiếp từ bảng `user_profiles`, loại bỏ hoàn toàn các thông tin nhạy cảm (`email`, `passwordHash`, `googleId`, `githubId`, `role`, `status`).
+- **Yêu cầu Auth**: Không (Public)
+- **Response `200 OK`**:
+  ```json
+  {
+    "id": "a3ffb1c0-c841-6b9f-c6f9-07b743300000",
+    "username": "alex_m",
+    "fullName": "Alex Morgan",
+    "bio": "Web developer & community builder",
+    "avatarUrl": "https://example.supabase.co/storage/v1/object/public/weshare-media/avatars/uuid.jpg",
+    "coverUrl": "https://example.supabase.co/storage/v1/object/public/weshare-media/covers/uuid.jpg",
+    "location": "Hà Nội, Việt Nam",
+    "website": "https://alex.dev",
+    "createdAt": "2026-09-20T10:00:00.000Z"
+  }
+  ```
+- **Lỗi `404 Not Found`**: `USER_NOT_FOUND` (không tìm thấy người dùng)
+
+##### 5. Quy trình Upload Avatar & Cover qua S3 Presigned URL
+1. **Xin Presigned URL**:
+   - `POST /api/v1/users/me/avatar/presigned-url` hoặc `POST /api/v1/users/me/cover/presigned-url`
+   - Request Body:
+     ```json
+     {
+       "mimeType": "image/jpeg",
+       "fileSize": 2048000
+     }
+     ```
+     *(Ràng buộc: MIME `image/jpeg`, `image/png`, `image/webp`. Kích thước avatar $\le$ 5MB, cover $\le$ 10MB)*
+   - Response `200 OK`:
+     ```json
+     {
+       "uploadUrl": "https://<project-ref>.supabase.co/storage/v1/s3/weshare-media/avatars/user-id/uuid.jpg?X-Amz-Algorithm=...",
+       "fileKey": "avatars/user-id/uuid.jpg",
+       "publicUrl": "https://<project-ref>.supabase.co/storage/v1/object/public/weshare-media/avatars/user-id/uuid.jpg",
+       "expiresIn": 900
+     }
+     ```
+2. **Client Upload trực tiếp**: Client gọi HTTP `PUT <uploadUrl>` kèm binary file và header `Content-Type: image/jpeg` trực tiếp lên Supabase S3.
+3. **Cập nhật URL & Dọn dẹp**:
+   - Client gọi `PUT /api/v1/users/me/avatar` (hoặc `PUT /api/v1/users/me/cover`) kèm `{ "avatarUrl": "<publicUrl>" }` hoặc `{ "coverUrl": "<publicUrl>" }`.
+   - Backend lưu URL mới vào `user_profiles`, tự động xóa file cũ trên Storage và phát sự kiện `user.profile.updated` qua RabbitMQ.
+4. **Xóa Avatar / Cover**:
+   - Gọi `DELETE /api/v1/users/me/avatar` hoặc `DELETE /api/v1/users/me/cover`.
+   - Backend set trường về `null`, xóa file cũ trên Storage và phát sự kiện `user.profile.updated`.
+
 
 ### 2.3. Module Media (Supabase Presigned URL)
 
