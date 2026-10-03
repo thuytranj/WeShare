@@ -1,1 +1,2 @@
-// App layouts: AppLayout, AuthLayout, ChatLayout, AdminLayout
+export * from './AuthLayout';
+export * from './AppLayout';

@@ -1,1 +1,1 @@
-// Routing configuration: PublicRoute, ProtectedRoute, AdminRoute
+export * from './AppRoutes';
