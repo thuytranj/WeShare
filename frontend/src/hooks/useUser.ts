@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { userService } from '../services/user.service';
 import { useAuthStore } from '../stores/auth.store';
@@ -136,16 +137,39 @@ export const useRemoveCover = () => {
 };
 
 /**
- * Check if username handle is available
+ * Check if username handle is available with debouncing
  */
-export const useCheckUsernameAvailability = (username: string) => {
-  return useQuery({
-    queryKey: userKeys.checkUsername(username),
-    queryFn: () => userService.checkUsername(username),
-    enabled: Boolean(username && username.trim().length >= 3),
+export const useCheckUsernameAvailability = (
+  username: string,
+  debounceMs = 300,
+) => {
+  const [debouncedUsername, setDebouncedUsername] = useState(username);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedUsername(username);
+    }, debounceMs);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [username, debounceMs]);
+
+  const trimmedUsername = debouncedUsername.trim();
+
+  const query = useQuery({
+    queryKey: userKeys.checkUsername(trimmedUsername),
+    queryFn: () => userService.checkUsername(trimmedUsername),
+    enabled: Boolean(trimmedUsername.length >= 3),
     staleTime: 1000 * 30, // 30 seconds
     retry: false,
   });
+
+  return {
+    ...query,
+    debouncedUsername,
+    isDebouncing: username.trim() !== trimmedUsername,
+  };
 };
 
 /**
