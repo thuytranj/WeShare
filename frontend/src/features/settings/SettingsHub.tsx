@@ -78,17 +78,18 @@ export const SettingsHub: React.FC<SettingsHubProps> = ({ onNavigateToProfile })
   };
 
   return (
-    <div className="w-full space-y-8 select-none">
+    <div className="w-full space-y-8">
       {/* Header & Breadcrumbs */}
       <header className="space-y-4">
         {/* Breadcrumb Navigation */}
         <nav className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
-          <span
+          <button
+            type="button"
             onClick={() => navigate('/')}
             className="hover:text-slate-700 dark:hover:text-slate-200 transition-colors cursor-pointer"
           >
             Home
-          </span>
+          </button>
           <span className="text-slate-400 dark:text-slate-600">/</span>
           <span className="text-[#7C3AED] dark:text-[#A78BFA] font-semibold">
             {t('settingsTitle')}
@@ -261,11 +262,24 @@ export const SettingsHub: React.FC<SettingsHubProps> = ({ onNavigateToProfile })
         </div>
 
         {/* 2 Selectable Cards Side-by-Side */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-6">
+        <div
+          role="radiogroup"
+          aria-label={t('appearanceTitle')}
+          className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-6"
+        >
           {/* Card 1: Light Mode */}
           <div
+            role="radio"
+            aria-checked={!isDark}
+            tabIndex={0}
             onClick={() => setTheme('light')}
-            className={`rounded-2xl p-5 cursor-pointer relative group flex flex-col justify-between transition-all duration-200 border ${
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setTheme('light');
+              }
+            }}
+            className={`rounded-2xl p-5 cursor-pointer relative group flex flex-col justify-between transition-all duration-200 border focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
               !isDark
                 ? 'ring-2 ring-indigo-500/80 dark:ring-indigo-400/80 border-indigo-500/40 bg-white dark:bg-[#181B24] shadow-md'
                 : 'border-slate-200/80 dark:border-white/5 bg-white/60 dark:bg-[#181B24]/60 opacity-80 hover:opacity-100 hover:ring-1 hover:ring-indigo-500/40'
@@ -328,8 +342,17 @@ export const SettingsHub: React.FC<SettingsHubProps> = ({ onNavigateToProfile })
 
           {/* Card 2: Dark Mode */}
           <div
+            role="radio"
+            aria-checked={isDark}
+            tabIndex={0}
             onClick={() => setTheme('dark')}
-            className={`rounded-2xl p-5 cursor-pointer relative group flex flex-col justify-between transition-all duration-200 border ${
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setTheme('dark');
+              }
+            }}
+            className={`rounded-2xl p-5 cursor-pointer relative group flex flex-col justify-between transition-all duration-200 border focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
               isDark
                 ? 'ring-2 ring-indigo-500/80 dark:ring-indigo-400/80 border-indigo-500/40 bg-white dark:bg-[#181B24] shadow-md'
                 : 'border-slate-200/80 dark:border-white/5 bg-white/60 dark:bg-[#181B24]/60 opacity-80 hover:opacity-100 hover:ring-1 hover:ring-indigo-500/40'
@@ -413,11 +436,24 @@ export const SettingsHub: React.FC<SettingsHubProps> = ({ onNavigateToProfile })
         </div>
 
         {/* 2 Selectable Cards Side-by-Side */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-6">
+        <div
+          role="radiogroup"
+          aria-label={t('languageTitle')}
+          className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-6"
+        >
           {/* Card 1: English (US) */}
           <div
+            role="radio"
+            aria-checked={locale === 'en'}
+            tabIndex={0}
             onClick={() => setLocale('en')}
-            className={`rounded-2xl p-4 flex items-center justify-between cursor-pointer transition-all duration-200 border ${
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setLocale('en');
+              }
+            }}
+            className={`rounded-2xl p-4 flex items-center justify-between cursor-pointer transition-all duration-200 border focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
               locale === 'en'
                 ? 'ring-2 ring-indigo-500/80 dark:ring-indigo-400/80 border-indigo-500/40 bg-white dark:bg-[#181B24] shadow-md'
                 : 'border-slate-200/80 dark:border-white/5 bg-white/60 dark:bg-[#181B24]/60 opacity-75 hover:opacity-100 hover:ring-1 hover:ring-indigo-500/40'
@@ -454,8 +490,17 @@ export const SettingsHub: React.FC<SettingsHubProps> = ({ onNavigateToProfile })
 
           {/* Card 2: Tiếng Việt */}
           <div
+            role="radio"
+            aria-checked={locale === 'vi'}
+            tabIndex={0}
             onClick={() => setLocale('vi')}
-            className={`rounded-2xl p-4 flex items-center justify-between cursor-pointer transition-all duration-200 border ${
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setLocale('vi');
+              }
+            }}
+            className={`rounded-2xl p-4 flex items-center justify-between cursor-pointer transition-all duration-200 border focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
               locale === 'vi'
                 ? 'ring-2 ring-indigo-500/80 dark:ring-indigo-400/80 border-indigo-500/40 bg-white dark:bg-[#181B24] shadow-md'
                 : 'border-slate-200/80 dark:border-white/5 bg-white/60 dark:bg-[#181B24]/60 opacity-75 hover:opacity-100 hover:ring-1 hover:ring-indigo-500/40'
