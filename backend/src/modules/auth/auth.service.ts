@@ -9,7 +9,14 @@ import { User, UserStatus } from '../users/entities/user.entity';
 import { RefreshToken } from './entities/refresh-token.entity';
 import { OtpService } from './services/otp.service';
 import { RedisService } from '../../common/redis/redis.service';
-import { RegisterDto, LoginDto, VerifyOtpDto, ResendOtpDto } from './dto';
+import {
+  RegisterDto,
+  LoginDto,
+  VerifyOtpDto,
+  ResendOtpDto,
+  ForgotPasswordDto,
+  ResetPasswordDto,
+} from './dto';
 import { AppException } from '../../common/exceptions/app.exception';
 import { ErrorCode } from '../../common/exceptions/error-code.enum';
 
@@ -134,6 +141,44 @@ export class AuthService {
     return {
       message: 'A fresh verification OTP has been dispatched to your email.',
       email: dto.email,
+    };
+  }
+
+  async forgotPassword(dto: ForgotPasswordDto): Promise<{ message: string; email: string }> {
+    const user = await this.usersService.findByEmail(dto.email);
+    if (user) {
+      await this.otpService.sendOtp(dto.email, user.fullName);
+    }
+
+    return {
+      message: 'If this email is registered, a password reset code has been dispatched.',
+      email: dto.email,
+    };
+  }
+
+  async resetPassword(dto: ResetPasswordDto): Promise<{ message: string }> {
+    await this.otpService.verifyOtp(dto.email, dto.otp);
+
+    const user = await this.usersService.findByEmail(dto.email);
+    if (!user) {
+      throw new AppException(
+        ErrorCode.USER_NOT_FOUND,
+        'User record not found for this email.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const passwordHash = await bcrypt.hash(dto.newPassword, 10);
+    await this.usersService.updatePassword(user.id, passwordHash);
+
+    // Revoke all existing refresh tokens for security
+    await this.refreshTokenRepository.update(
+      { userId: user.id },
+      { isRevoked: true },
+    );
+
+    return {
+      message: 'Password has been successfully updated. You may now sign in with your new credentials.',
     };
   }
 

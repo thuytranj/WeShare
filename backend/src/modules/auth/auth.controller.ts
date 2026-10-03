@@ -7,7 +7,10 @@ import {
   HttpStatus,
   UseGuards,
   Req,
+  Res,
 } from '@nestjs/common';
+import { Response } from 'express';
+import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
 import { Throttle } from '@nestjs/throttler';
 import {
@@ -23,6 +26,8 @@ import {
   VerifyOtpDto,
   ResendOtpDto,
   RefreshTokenDto,
+  ForgotPasswordDto,
+  ResetPasswordDto,
 } from './dto';
 import { Public } from '../../common/decorators/public.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -30,7 +35,10 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly configService: ConfigService,
+  ) {}
 
   @Public()
   @Throttle({ auth: { limit: 5, ttl: 60000 } })
@@ -102,7 +110,28 @@ export class AuthController {
   }
 
   @Public()
-  @Get('google')
+  @Throttle({ auth: { limit: 3, ttl: 300000 } })
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Request password reset OTP via email' })
+  @ApiResponse({ status: 200, description: 'Reset OTP dispatched' })
+  async forgotPassword(@Body() dto: ForgotPasswordDto) {
+    return this.authService.forgotPassword(dto);
+  }
+
+  @Public()
+  @Throttle({ auth: { limit: 5, ttl: 60000 } })
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Reset password with OTP verification' })
+  @ApiResponse({ status: 200, description: 'Password reset successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid or expired OTP' })
+  async resetPassword(@Body() dto: ResetPasswordDto) {
+    return this.authService.resetPassword(dto);
+  }
+
+  @Public()
+  @Get(['google', 'oauth/google'])
   @UseGuards(AuthGuard('google'))
   @ApiOperation({ summary: 'Initiate Google OAuth2 authentication flow' })
   async googleAuth() {
@@ -110,15 +139,25 @@ export class AuthController {
   }
 
   @Public()
-  @Get('google/callback')
+  @Get(['google/callback', 'oauth/google/callback'])
   @UseGuards(AuthGuard('google'))
   @ApiOperation({ summary: 'Google OAuth2 callback' })
-  async googleAuthCallback(@Req() req: any) {
-    return this.authService.handleOAuthLogin(req.user);
+  async googleAuthCallback(@Req() req: any, @Res() res: Response) {
+    const authResult = await this.authService.handleOAuthLogin(req.user);
+    const frontendUrl = this.configService.get<string>('CORS_ORIGIN', 'http://localhost:5173');
+
+    if (req.headers.accept?.includes('application/json')) {
+      return res.json(authResult);
+    }
+
+    const redirectUrl = new URL('/auth/callback', frontendUrl);
+    redirectUrl.searchParams.set('accessToken', authResult.accessToken);
+    redirectUrl.searchParams.set('refreshToken', authResult.refreshToken);
+    return res.redirect(redirectUrl.toString());
   }
 
   @Public()
-  @Get('github')
+  @Get(['github', 'oauth/github'])
   @UseGuards(AuthGuard('github'))
   @ApiOperation({ summary: 'Initiate GitHub OAuth2 authentication flow' })
   async githubAuth() {
@@ -126,11 +165,21 @@ export class AuthController {
   }
 
   @Public()
-  @Get('github/callback')
+  @Get(['github/callback', 'oauth/github/callback'])
   @UseGuards(AuthGuard('github'))
   @ApiOperation({ summary: 'GitHub OAuth2 callback' })
-  async githubAuthCallback(@Req() req: any) {
-    return this.authService.handleOAuthLogin(req.user);
+  async githubAuthCallback(@Req() req: any, @Res() res: Response) {
+    const authResult = await this.authService.handleOAuthLogin(req.user);
+    const frontendUrl = this.configService.get<string>('CORS_ORIGIN', 'http://localhost:5173');
+
+    if (req.headers.accept?.includes('application/json')) {
+      return res.json(authResult);
+    }
+
+    const redirectUrl = new URL('/auth/callback', frontendUrl);
+    redirectUrl.searchParams.set('accessToken', authResult.accessToken);
+    redirectUrl.searchParams.set('refreshToken', authResult.refreshToken);
+    return res.redirect(redirectUrl.toString());
   }
 
   @ApiBearerAuth()

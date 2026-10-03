@@ -14,7 +14,7 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
       ),
       callbackURL: configService.get<string>(
         'GITHUB_CALLBACK_URL',
-        'http://localhost:3000/api/v1/auth/github/callback',
+        'http://localhost:3000/api/v1/auth/oauth/github/callback',
       ),
       scope: ['user:email'],
     });

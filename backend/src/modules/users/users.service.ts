@@ -107,4 +107,14 @@ export class UsersService {
     user.status = UserStatus.ACTIVE;
     return this.userRepository.save(user);
   }
+
+  async updatePassword(userId: string, passwordHash: string): Promise<User> {
+    const user = await this.findById(userId);
+    if (!user) {
+      throw new Error(`User with ID ${userId} not found`);
+    }
+
+    user.passwordHash = passwordHash;
+    return this.userRepository.save(user);
+  }
 }
