@@ -94,6 +94,58 @@ const translations = {
     btnResetAndUpdate: 'Reset & Update Password',
     backToSignIn: 'Back to Sign In',
     passwordResetSuccess: 'Password updated successfully! Redirecting to login...',
+
+    // Settings & Profile
+    settingsTitle: 'Settings',
+    settingsSubtitle: 'Manage your preferences, account settings, and customize your experience.',
+    settingsTabEditProfile: 'Edit Profile',
+    settingsTabSecurity: 'Security & Access',
+    settingsTabPrivacy: 'Privacy & Data',
+    settingsTabNotifications: 'Notifications',
+    settingsTabAppearance: 'Appearance',
+
+    profileOverviewTitle: 'Profile Overview',
+    btnEditProfile: 'Edit Profile',
+    statFollowers: 'Followers',
+    statFollowing: 'Following',
+
+    appearanceTitle: 'Appearance',
+    appearanceSubtitle: 'Customize the look and feel of your workspace.',
+    themeLightMode: 'Light Mode',
+    themeLightDesc: 'Clean, soft pastel neumorphic tones',
+    themeDarkMode: 'Dark Mode',
+    themeDarkDesc: 'Deep, tactile charcoal with high contrast',
+
+    languageTitle: 'Language & Region',
+    languageSubtitle: 'Select your preferred language for the interface.',
+    langEnglish: 'English (US)',
+    langEnglishDesc: 'Standard English interface',
+    langVietnamese: 'Tiếng Việt',
+    langVietnameseDesc: 'Giao diện Tiếng Việt hoàn chỉnh',
+
+    profileHeaderTitle: 'Profile Details',
+    profileHeaderSubtitle: 'Update your personal details, public bio, and social presence.',
+    btnChangeCover: 'Change Cover',
+    btnUpdatePhoto: 'Update Photo',
+
+    fieldDisplayName: 'Display Name',
+    fieldUsername: 'Username',
+    fieldPronouns: 'Pronouns',
+    fieldLocation: 'Location',
+    fieldWebsite: 'Website',
+    fieldBio: 'Bio',
+
+    badgeAvailable: 'Available',
+    badgeTaken: 'Already taken',
+    charCounter: 'characters remaining',
+
+    btnSaveChanges: 'Save Changes',
+    btnCancel: 'Cancel',
+    savingChanges: 'Saving changes...',
+    profileSaveSuccess: 'Profile updated successfully!',
+    profileSaveError: 'Failed to update profile. Please try again.',
+
+    syncNotice: 'Real-time sync active • Preferences update instantly across sessions',
   },
   vi: {
     // Brand
@@ -186,6 +238,58 @@ const translations = {
     btnResetAndUpdate: 'Đặt Lại Mật Khẩu',
     backToSignIn: 'Quay lại Đăng nhập',
     passwordResetSuccess: 'Đã cập nhật mật khẩu thành công! Đang chuyển về trang đăng nhập...',
+
+    // Settings & Profile
+    settingsTitle: 'Cài đặt',
+    settingsSubtitle: 'Quản lý tùy chọn, thiết lập tài khoản và cá nhân hóa trải nghiệm của bạn.',
+    settingsTabEditProfile: 'Chỉnh sửa hồ sơ',
+    settingsTabSecurity: 'Bảo mật & Truy cập',
+    settingsTabPrivacy: 'Quyền riêng tư & Dữ liệu',
+    settingsTabNotifications: 'Thông báo',
+    settingsTabAppearance: 'Giao diện',
+
+    profileOverviewTitle: 'Tổng quan hồ sơ',
+    btnEditProfile: 'Chỉnh sửa hồ sơ',
+    statFollowers: 'Người theo dõi',
+    statFollowing: 'Đang theo dõi',
+
+    appearanceTitle: 'Giao diện',
+    appearanceSubtitle: 'Tùy chỉnh giao diện không gian làm việc của bạn.',
+    themeLightMode: 'Chế độ Sáng',
+    themeLightDesc: 'Tông màu pastel nhẹ nhàng, êm dịu',
+    themeDarkMode: 'Chế độ Tối',
+    themeDarkDesc: 'Tông màu than trầm ấm, độ tương phản cao',
+
+    languageTitle: 'Ngôn ngữ & Khu vực',
+    languageSubtitle: 'Chọn ngôn ngữ hiển thị cho giao diện.',
+    langEnglish: 'Tiếng Anh (US)',
+    langEnglishDesc: 'Giao diện tiếng Anh chuẩn',
+    langVietnamese: 'Tiếng Việt',
+    langVietnameseDesc: 'Giao diện tiếng Việt hoàn chỉnh',
+
+    profileHeaderTitle: 'Thông tin hồ sơ',
+    profileHeaderSubtitle: 'Cập nhật thông tin cá nhân, tiểu sử công khai và trang cá nhân.',
+    btnChangeCover: 'Đổi ảnh bìa',
+    btnUpdatePhoto: 'Cập nhật ảnh',
+
+    fieldDisplayName: 'Tên hiển thị',
+    fieldUsername: 'Tên người dùng',
+    fieldPronouns: 'Đại từ xưng hô',
+    fieldLocation: 'Địa điểm',
+    fieldWebsite: 'Website',
+    fieldBio: 'Tiểu sử',
+
+    badgeAvailable: 'Khả dụng',
+    badgeTaken: 'Đã có người dùng',
+    charCounter: 'ký tự còn lại',
+
+    btnSaveChanges: 'Lưu thay đổi',
+    btnCancel: 'Hủy',
+    savingChanges: 'Đang lưu thay đổi...',
+    profileSaveSuccess: 'Đã cập nhật hồ sơ thành công!',
+    profileSaveError: 'Cập nhật hồ sơ thất bại. Vui lòng thử lại.',
+
+    syncNotice: 'Đồng bộ hóa thời gian thực • Tùy chọn được áp dụng ngay lập tức trên các phiên',
   },
 };
 
