@@ -37,6 +37,14 @@ frontend/src/
 └── types/                       # Shared TypeScript interfaces
 ```
 
+### 1.1 UI Component Architecture: Prioritize shadcn/ui Primitives
+
+When creating, refactoring, or designing any UI components:
+1. **Always Check shadcn/ui First**: Prioritize existing shadcn/ui primitives in `src/components/ui/` (`Input`, `Select`, `DatePicker`, `Button`, `Popover`, `Calendar`, etc.) over raw HTML elements (`<input>`, `<select>`, `<button>`, `<input type="date">`).
+2. **Add Missing Primitives via shadcn**: If a primitive is needed and does not yet exist in `src/components/ui/` (e.g., `Dialog`, `DropdownMenu`, `Tabs`, `Tooltip`, `Sheet`, `Checkbox`, `RadioGroup`), add it using `npx shadcn@latest add <component>` or adapt it with project design tokens rather than coding custom ad-hoc controls.
+3. **Preserve Project Design Language**: When consuming shadcn primitives, preserve WeShare's Neumorphic Soft UI design tokens (`neu-flat`, `neu-pressed`, `neu-inset`, soft borders, and dark tactile charcoal styling).
+4. **Accessible by Default**: Use Base UI / Radix primitives underlying shadcn components for keyboard navigation, ARIA semantics, and focus management.
+
 ---
 
 ## 2. Server State vs Client State Guidelines
