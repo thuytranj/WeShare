@@ -4,11 +4,9 @@ import {
   AlertCircle,
   ArrowLeft,
   AtSign,
-  Calendar,
   Camera,
   Check,
   CheckCircle2,
-  ChevronDown,
   ExternalLink,
   Globe,
   MapPin,
@@ -23,6 +21,16 @@ import {
   useUploadCover,
   useCheckUsernameAvailability,
 } from '../../hooks/useUser';
+import {
+  Input,
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+  SelectGroup,
+  DatePicker,
+} from '../../components/ui';
 import { useTranslation } from '../../stores/i18n.store';
 import { UserGender } from '../../types';
 
@@ -543,17 +551,17 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
                 {t('fieldDisplayName')}
               </label>
               <div className="relative flex items-center">
-                <span className="absolute left-3.5 text-slate-400 dark:text-slate-500 pointer-events-none">
+                <span className="absolute left-3.5 text-slate-400 dark:text-slate-500 pointer-events-none z-10">
                   <User className="w-4 h-4" />
                 </span>
-                <input
+                <Input
                   id="displayName"
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Alex Morgan"
                   maxLength={100}
-                  className="w-full pl-10 pr-4 py-2.5 md:py-3 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-xs md:text-sm text-slate-800 dark:text-white font-medium border-none shadow-[inset_3px_3px_6px_#D1D9E6,inset_-3px_-3px_6px_#FFFFFF] dark:shadow-[inset_3px_3px_6px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.02)] focus:ring-2 focus:ring-[#8B70DF]/40 focus:outline-none transition-all"
+                  className="pl-10 pr-4 py-2.5 md:py-3 text-xs md:text-sm font-medium"
                 />
               </div>
             </div>
@@ -599,10 +607,10 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
                 )}
               </div>
               <div className="relative flex items-center">
-                <span className="absolute left-3.5 text-slate-400 dark:text-slate-500 pointer-events-none">
+                <span className="absolute left-3.5 text-slate-400 dark:text-slate-500 pointer-events-none z-10">
                   <AtSign className="w-4 h-4" />
                 </span>
-                <input
+                <Input
                   id="username"
                   type="text"
                   value={username}
@@ -611,7 +619,7 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
                   }
                   placeholder="alexmorgan"
                   maxLength={30}
-                  className="w-full pl-10 pr-4 py-2.5 md:py-3 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-xs md:text-sm text-slate-800 dark:text-white font-medium border-none shadow-[inset_3px_3px_6px_#D1D9E6,inset_-3px_-3px_6px_#FFFFFF] dark:shadow-[inset_3px_3px_6px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.02)] focus:ring-2 focus:ring-[#8B70DF]/40 focus:outline-none transition-all"
+                  className="pl-10 pr-4 py-2.5 md:py-3 text-xs md:text-sm font-medium"
                 />
               </div>
             </div>
@@ -625,7 +633,7 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
                 {t('fieldGender')}
               </label>
               <div className="relative flex items-center">
-                <span className="absolute left-3.5 text-slate-400 dark:text-slate-500 pointer-events-none">
+                <span className="absolute left-3.5 text-slate-400 dark:text-slate-500 pointer-events-none z-10">
                   <svg
                     className="w-4 h-4"
                     fill="none"
@@ -639,21 +647,30 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
                     <path d="M12 13v8M9 18h6" />
                   </svg>
                 </span>
-                <select
-                  id="gender"
-                  value={gender}
-                  onChange={(e) => setGender(e.target.value as UserGender)}
-                  className="w-full pl-10 pr-9 py-2.5 md:py-3 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-xs md:text-sm text-slate-800 dark:text-white font-medium border-none shadow-[inset_3px_3px_6px_#D1D9E6,inset_-3px_-3px_6px_#FFFFFF] dark:shadow-[inset_3px_3px_6px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.02)] focus:ring-2 focus:ring-[#8B70DF]/40 focus:outline-none transition-all appearance-none cursor-pointer"
+                <Select
+                  value={gender as string}
+                  onValueChange={(val) => setGender((val || 'PREFER_NOT_TO_SAY') as UserGender)}
                 >
-                  {GENDER_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {t(option.labelKey)}
-                    </option>
-                  ))}
-                </select>
-                <span className="absolute right-3.5 text-slate-400 dark:text-slate-500 pointer-events-none">
-                  <ChevronDown className="w-4 h-4" />
-                </span>
+                  <SelectTrigger
+                    id="gender"
+                    className="w-full pl-10 pr-4 py-2.5 md:py-3 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-xs md:text-sm text-slate-800 dark:text-white font-medium border-none shadow-[inset_3px_3px_6px_#D1D9E6,inset_-3px_-3px_6px_#FFFFFF] dark:shadow-[inset_3px_3px_6px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.02)] focus-visible:ring-2 focus-visible:ring-[#8B70DF]/40 outline-none transition-all cursor-pointer h-auto"
+                  >
+                    <SelectValue placeholder={t('fieldGender')} />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white dark:bg-[#1E232B] border border-slate-200 dark:border-white/10 shadow-xl rounded-2xl z-50">
+                    <SelectGroup>
+                      {GENDER_OPTIONS.map((option) => (
+                        <SelectItem
+                          key={option.value}
+                          value={option.value}
+                          className="text-xs md:text-sm text-slate-800 dark:text-slate-200 cursor-pointer rounded-xl"
+                        >
+                          {t(option.labelKey)}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -665,16 +682,12 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
               >
                 {t('fieldDateOfBirth')}
               </label>
-              <div className="relative flex items-center">
-                <span className="absolute left-3.5 text-slate-400 dark:text-slate-500 pointer-events-none">
-                  <Calendar className="w-4 h-4" />
-                </span>
-                <input
+              <div className="relative">
+                <DatePicker
                   id="dob"
-                  type="date"
                   value={dateOfBirth}
-                  onChange={(e) => setDateOfBirth(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 md:py-3 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-xs md:text-sm text-slate-800 dark:text-white font-medium border-none shadow-[inset_3px_3px_6px_#D1D9E6,inset_-3px_-3px_6px_#FFFFFF] dark:shadow-[inset_3px_3px_6px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.02)] focus:ring-2 focus:ring-[#8B70DF]/40 focus:outline-none transition-all cursor-pointer"
+                  onChange={(dateStr) => setDateOfBirth(dateStr)}
+                  placeholder={t('fieldDateOfBirth')}
                 />
               </div>
             </div>
@@ -688,17 +701,17 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
                 {t('fieldLocation')}
               </label>
               <div className="relative flex items-center">
-                <span className="absolute left-3.5 text-slate-400 dark:text-slate-500 pointer-events-none">
+                <span className="absolute left-3.5 text-slate-400 dark:text-slate-500 pointer-events-none z-10">
                   <MapPin className="w-4 h-4" />
                 </span>
-                <input
+                <Input
                   id="location"
                   type="text"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   placeholder="San Francisco, CA"
                   maxLength={100}
-                  className="w-full pl-10 pr-4 py-2.5 md:py-3 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-xs md:text-sm text-slate-800 dark:text-white font-medium border-none shadow-[inset_3px_3px_6px_#D1D9E6,inset_-3px_-3px_6px_#FFFFFF] dark:shadow-[inset_3px_3px_6px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.02)] focus:ring-2 focus:ring-[#8B70DF]/40 focus:outline-none transition-all"
+                  className="pl-10 pr-4 py-2.5 md:py-3 text-xs md:text-sm font-medium"
                 />
               </div>
             </div>
@@ -725,17 +738,17 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
                 )}
               </div>
               <div className="relative flex items-center">
-                <span className="absolute left-3.5 text-slate-400 dark:text-slate-500 pointer-events-none">
+                <span className="absolute left-3.5 text-slate-400 dark:text-slate-500 pointer-events-none z-10">
                   <Globe className="w-4 h-4" />
                 </span>
-                <input
+                <Input
                   id="website"
                   type="url"
                   value={website}
                   onChange={(e) => setWebsite(e.target.value)}
                   placeholder="https://alexmorgan.design"
                   maxLength={255}
-                  className="w-full pl-10 pr-4 py-2.5 md:py-3 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-xs md:text-sm text-slate-800 dark:text-white font-medium border-none shadow-[inset_3px_3px_6px_#D1D9E6,inset_-3px_-3px_6px_#FFFFFF] dark:shadow-[inset_3px_3px_6px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.02)] focus:ring-2 focus:ring-[#8B70DF]/40 focus:outline-none transition-all"
+                  className="pl-10 pr-4 py-2.5 md:py-3 text-xs md:text-sm font-medium"
                 />
               </div>
             </div>

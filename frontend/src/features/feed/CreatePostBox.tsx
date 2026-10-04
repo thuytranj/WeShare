@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Image, Smile, Users } from 'lucide-react';
+import { Input } from '../../components/ui';
 import { useTranslation } from '../../stores/i18n.store';
 import { useAuthStore } from '../../stores/auth.store';
 
@@ -40,11 +41,12 @@ export const CreatePostBox: React.FC<CreatePostBoxProps> = ({ onPostCreated }) =
           />
 
           <div className="flex-1 relative">
-            <input
+            <Input
               type="text"
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder={t('composerPlaceholder')}
+              unstyled
               className="w-full bg-[#EEF2F8] dark:bg-[#131620] shadow-[inset_0_2px_5px_rgba(150,162,185,0.25)] dark:shadow-[inset_3px_3px_7px_rgba(0,0,0,0.75)] border border-slate-200/60 dark:border-white/5 rounded-full px-4 py-2.5 text-sm text-[#0F172A] dark:text-slate-100 placeholder:text-[#64748B] dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#8B70DF]/40 transition-all"
             />
           </div>

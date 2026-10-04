@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Search, TrendingUp, Check } from 'lucide-react';
+import { Input } from '../../components/ui';
 import { useTranslation } from '../../stores/i18n.store';
 
 interface SuggestedFriend {
@@ -77,11 +78,12 @@ export const RightRail: React.FC = () => {
       {/* Search Bar Capsule with SVG Magnifier */}
       <div className="bg-[#EEF2F8] dark:bg-[#131620] shadow-[inset_0_2px_5px_rgba(150,162,185,0.25)] dark:shadow-[inset_3px_3px_7px_rgba(0,0,0,0.75)] border border-slate-200/60 dark:border-white/5 rounded-full px-4 py-2.5 flex items-center gap-3">
         <Search size={16} className="text-[#64748B] shrink-0" />
-        <input
+        <Input
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder={t('navSearchPlaceholder')}
+          unstyled
           className="bg-transparent text-xs text-[#0F172A] dark:text-white placeholder-[#64748B] dark:placeholder:text-slate-500 outline-none w-full border-none p-0 focus:ring-0"
         />
       </div>
