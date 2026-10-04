@@ -16,6 +16,12 @@ export interface DatePickerProps {
   disabled?: boolean;
   className?: string;
   id?: string;
+  captionLayout?: 'label' | 'dropdown' | 'dropdown-months' | 'dropdown-years';
+  startMonth?: Date;
+  endMonth?: Date;
+  fromYear?: number;
+  toYear?: number;
+  disabledDates?: (date: Date) => boolean;
 }
 
 export function DatePicker({
@@ -25,8 +31,18 @@ export function DatePicker({
   disabled = false,
   className,
   id,
+  captionLayout = 'dropdown',
+  startMonth,
+  endMonth,
+  fromYear = 1920,
+  toYear,
+  disabledDates,
 }: DatePickerProps) {
   const [open, setOpen] = React.useState(false);
+
+  const currentYear = new Date().getFullYear();
+  const calculatedStartMonth = startMonth ?? (fromYear ? new Date(fromYear, 0) : new Date(1920, 0));
+  const calculatedEndMonth = endMonth ?? (toYear ? new Date(toYear, 11) : new Date(currentYear, 11));
 
   const parsedDate = React.useMemo(() => {
     if (!value) return undefined;
@@ -80,6 +96,10 @@ export function DatePicker({
           mode="single"
           selected={parsedDate}
           onSelect={handleSelect}
+          captionLayout={captionLayout}
+          startMonth={calculatedStartMonth}
+          endMonth={calculatedEndMonth}
+          disabled={disabledDates}
         />
       </PopoverContent>
     </Popover>

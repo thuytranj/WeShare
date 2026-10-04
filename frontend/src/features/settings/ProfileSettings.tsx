@@ -687,6 +687,10 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
                   value={dateOfBirth}
                   onChange={(dateStr) => setDateOfBirth(dateStr)}
                   placeholder={t('fieldDateOfBirth')}
+                  captionLayout="dropdown"
+                  fromYear={1920}
+                  toYear={new Date().getFullYear()}
+                  disabledDates={(date) => date > new Date()}
                 />
               </div>
             </div>

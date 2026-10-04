@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
 import { DayPicker } from 'react-day-picker';
 import { cn } from '@/lib/utils';
 
@@ -9,18 +9,24 @@ function Calendar({
   className,
   classNames,
   showOutsideDays = true,
+  captionLayout = 'label',
   ...props
 }: CalendarProps) {
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
+      captionLayout={captionLayout}
       className={cn('p-3 bg-white dark:bg-[#1E232B] rounded-2xl select-none', className)}
       classNames={{
         root: 'w-fit',
         months: 'relative flex flex-col gap-4',
         month: 'space-y-4',
         month_caption: 'flex items-center justify-center h-7 w-full',
-        caption_label: 'text-sm font-semibold text-slate-800 dark:text-slate-100 select-none',
+        dropdowns: 'flex items-center justify-center gap-1 text-sm font-medium',
+        dropdown_root: 'relative rounded-md inline-flex items-center',
+        dropdown: 'absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10',
+        caption_label:
+          'flex items-center gap-0.5 rounded-lg px-2 py-0.5 text-sm font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 cursor-pointer border border-transparent hover:border-slate-200 dark:hover:border-white/10 transition-colors select-none',
         nav: 'flex items-center justify-between absolute top-0 inset-x-0 w-full h-7 pointer-events-none z-10 px-1',
         button_previous: cn(
           'pointer-events-auto h-7 w-7 bg-transparent p-0 flex items-center justify-center rounded-md',
@@ -54,7 +60,10 @@ function Calendar({
           if (orientation === 'left') {
             return <ChevronLeft size={16} className={cn('h-4 w-4', chevronClassName)} {...chevronProps} />;
           }
-          return <ChevronRight size={16} className={cn('h-4 w-4', chevronClassName)} {...chevronProps} />;
+          if (orientation === 'right') {
+            return <ChevronRight size={16} className={cn('h-4 w-4', chevronClassName)} {...chevronProps} />;
+          }
+          return <ChevronDown size={14} className={cn('h-3.5 w-3.5 ml-1 text-slate-400', chevronClassName)} {...chevronProps} />;
         },
       }}
       {...props}
