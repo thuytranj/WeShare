@@ -34,7 +34,7 @@ export class StorageService {
     this.supabaseUrl = this.configService.get<string>('SUPABASE_URL');
     this.endpoint = this.configService.get<string>('S3_ENDPOINT');
 
-    const region = this.configService.get<string>('S3_REGION', 'global');
+    const region = this.configService.get<string>('S3_REGION', 'ap-southeast-1');
     const accessKeyId = this.configService.get<string>('S3_ACCESS_KEY_ID', 'test-access-key');
     const secretAccessKey = this.configService.get<string>(
       'S3_SECRET_ACCESS_KEY',

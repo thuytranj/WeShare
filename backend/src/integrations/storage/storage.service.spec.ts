@@ -31,7 +31,7 @@ describe('StorageService', () => {
                 S3_BUCKET_NAME: 'weshare-media',
                 SUPABASE_URL: 'https://test-project.supabase.co',
                 S3_ENDPOINT: 'https://test-project.supabase.co/storage/v1/s3',
-                S3_REGION: 'global',
+                S3_REGION: 'ap-southeast-1',
                 S3_ACCESS_KEY_ID: 'test-key',
                 S3_SECRET_ACCESS_KEY: 'test-secret',
               };
