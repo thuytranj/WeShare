@@ -87,7 +87,6 @@
     background-color: var(--canvas-bg);
     color: var(--text-primary);
     transition: background-color 0.25s ease, color 0.25s ease;
-    @apply bg-background text-foreground;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -98,10 +97,22 @@
     --font-sans: 'Geist Variable', sans-serif;
   }
   * {
-    @apply border-border;
+    border-color: var(--border);
   }
   html {
-    @apply font-sans;
+    font-family: var(--font-sans, 'Inter', system-ui, sans-serif);
+  }
+}
+
+@layer utilities {
+  .bg-background {
+    background-color: var(--background);
+  }
+  .text-foreground {
+    color: var(--foreground);
+  }
+  .border-border {
+    border-color: var(--border);
   }
 }
 
