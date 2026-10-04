@@ -47,7 +47,6 @@ export const SettingsHub: React.FC<SettingsHubProps> = ({ onNavigateToProfile })
   const { theme, setTheme, isDark } = useThemeStore();
   const { locale, setLocale, t } = useTranslation();
 
-  const [activeTab, setActiveTab] = useState<string>('overview');
   const [avatarError, setAvatarError] = useState<boolean>(false);
 
   const handleNavigateToProfile = () => {
@@ -55,26 +54,6 @@ export const SettingsHub: React.FC<SettingsHubProps> = ({ onNavigateToProfile })
       onNavigateToProfile();
     }
     navigate('/settings/profile');
-  };
-
-  const tabs = [
-    { id: 'overview', label: t('settingsTitle') },
-    { id: 'profile', label: t('settingsTabEditProfile') },
-    { id: 'appearance', label: t('settingsTabAppearance') },
-    { id: 'security', label: t('settingsTabSecurity') },
-    { id: 'privacy', label: t('settingsTabPrivacy') },
-    { id: 'notifications', label: t('settingsTabNotifications') },
-  ];
-
-  const handleTabClick = (tabId: string) => {
-    if (tabId === 'profile') {
-      handleNavigateToProfile();
-    } else {
-      setActiveTab(tabId);
-      if (tabId === 'appearance') {
-        document.getElementById('section-appearance')?.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
   };
 
   return (
@@ -104,27 +83,6 @@ export const SettingsHub: React.FC<SettingsHubProps> = ({ onNavigateToProfile })
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 font-normal">
             {t('settingsSubtitle')}
           </p>
-        </div>
-
-        {/* Horizontal Tab Navigation */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none border-b border-slate-200/70 dark:border-white/5">
-          {tabs.map((tab) => {
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => handleTabClick(tab.id)}
-                className={`px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer ${
-                  isActive
-                    ? 'bg-[#7C3AED] text-white shadow-[0_4px_14px_rgba(124,58,237,0.35)] dark:bg-[#A78BFA] dark:text-[#10131C]'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/[0.04]'
-                }`}
-              >
-                {tab.label}
-              </button>
-            );
-          })}
         </div>
       </header>
 

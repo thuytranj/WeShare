@@ -4,9 +4,9 @@ import {
   AlertCircle,
   ArrowLeft,
   AtSign,
+  Calendar,
   Camera,
   Check,
-  CheckCircle,
   CheckCircle2,
   ChevronDown,
   ExternalLink,
@@ -14,7 +14,6 @@ import {
   MapPin,
   RefreshCw,
   ShieldCheck,
-  Sparkles,
   User,
 } from 'lucide-react';
 import {
@@ -25,32 +24,21 @@ import {
   useCheckUsernameAvailability,
 } from '../../hooks/useUser';
 import { useTranslation } from '../../stores/i18n.store';
+import { UserGender } from '../../types';
 
 export interface ProfileSettingsProps {
   onBack?: () => void;
 }
 
-const PRONOUN_OPTIONS = [
-  { value: '', label: 'Select pronouns' },
-  { value: 'they/them', label: 'they/them' },
-  { value: 'she/her', label: 'she/her' },
-  { value: 'he/him', label: 'he/him' },
-  { value: 'prefer-not-to-say', label: 'prefer-not-to-say' },
+const GENDER_OPTIONS: Array<{
+  value: UserGender;
+  labelKey: 'genderFemale' | 'genderMale' | 'genderOther' | 'genderPreferNotToSay';
+}> = [
+  { value: 'FEMALE', labelKey: 'genderFemale' },
+  { value: 'MALE', labelKey: 'genderMale' },
+  { value: 'OTHER', labelKey: 'genderOther' },
+  { value: 'PREFER_NOT_TO_SAY', labelKey: 'genderPreferNotToSay' },
 ];
-
-const PRONOUN_TO_GENDER_MAP: Record<string, string> = {
-  'he/him': 'MALE',
-  'she/her': 'FEMALE',
-  'they/them': 'OTHER',
-  'prefer-not-to-say': 'PREFER_NOT_TO_SAY',
-};
-
-const GENDER_TO_PRONOUN_MAP: Record<string, string> = {
-  MALE: 'he/him',
-  FEMALE: 'she/her',
-  OTHER: 'they/them',
-  PREFER_NOT_TO_SAY: 'prefer-not-to-say',
-};
 
 function formatMetricCount(count: number | undefined | null, defaultFallback: string): string {
   if (count === undefined || count === null) {
@@ -86,10 +74,11 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
   // Local form state
   const [fullName, setFullName] = useState('');
   const [username, setUsername] = useState('');
-  const [bio, setBio] = useState('');
+  const [gender, setGender] = useState<UserGender | string>('PREFER_NOT_TO_SAY');
+  const [dateOfBirth, setDateOfBirth] = useState('');
   const [location, setLocation] = useState('');
   const [website, setWebsite] = useState('');
-  const [gender, setGender] = useState('');
+  const [bio, setBio] = useState('');
   const [avatarError, setAvatarError] = useState(false);
 
   // Hidden file input refs
@@ -101,13 +90,11 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
     if (profile) {
       setFullName(profile.fullName ?? '');
       setUsername(profile.username ?? '');
-      setBio(profile.bio ?? '');
+      setGender((profile.gender as UserGender) || 'PREFER_NOT_TO_SAY');
+      setDateOfBirth(profile.dateOfBirth ? profile.dateOfBirth.split('T')[0] : '');
       setLocation(profile.location ?? '');
       setWebsite(profile.website ?? '');
-      const mappedPronoun = profile.gender
-        ? GENDER_TO_PRONOUN_MAP[profile.gender] || profile.gender
-        : '';
-      setGender(mappedPronoun);
+      setBio(profile.bio ?? '');
     }
   }, [profile]);
 
@@ -132,25 +119,6 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
       onBack();
     } else {
       navigate('/settings');
-    }
-  };
-
-  const tabs = [
-    { id: 'overview', label: t('settingsTitle') },
-    { id: 'profile', label: t('settingsTabEditProfile') },
-    { id: 'appearance', label: t('settingsTabAppearance') },
-    { id: 'security', label: t('settingsTabSecurity') },
-    { id: 'privacy', label: t('settingsTabPrivacy') },
-    { id: 'notifications', label: t('settingsTabNotifications') },
-  ];
-
-  const handleTabClick = (tabId: string) => {
-    if (tabId === 'overview') {
-      handleBack();
-    } else if (tabId === 'profile') {
-      // already on profile
-    } else {
-      handleBack();
     }
   };
 
@@ -186,13 +154,11 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
     if (profile) {
       setFullName(profile.fullName ?? '');
       setUsername(profile.username ?? '');
-      setBio(profile.bio ?? '');
+      setGender((profile.gender as UserGender) || 'PREFER_NOT_TO_SAY');
+      setDateOfBirth(profile.dateOfBirth ? profile.dateOfBirth.split('T')[0] : '');
       setLocation(profile.location ?? '');
       setWebsite(profile.website ?? '');
-      const mappedPronoun = profile.gender
-        ? GENDER_TO_PRONOUN_MAP[profile.gender] || profile.gender
-        : '';
-      setGender(mappedPronoun);
+      setBio(profile.bio ?? '');
     }
     updateProfileMutation.reset();
   };
@@ -214,16 +180,15 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
         : `https://${trimmedWebsite}`
       : undefined;
 
-    const mappedGender = PRONOUN_TO_GENDER_MAP[gender] || undefined;
-
     try {
       await updateProfileMutation.mutateAsync({
         fullName: fullName.trim() || undefined,
         username: username.trim(),
-        bio: bio.trim(),
+        gender: (gender as UserGender) || undefined,
+        dateOfBirth: dateOfBirth ? dateOfBirth : undefined,
         location: location.trim(),
         website: normalizedWebsite,
-        gender: mappedGender,
+        bio: bio.trim(),
       });
     } catch {
       // Error handled by updateProfileMutation.isError
@@ -236,7 +201,6 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
       : `https://${website}`
     : '#';
 
-  const isKnownPronoun = PRONOUN_OPTIONS.some((opt) => opt.value === gender);
   const isSubmitDisabled =
     updateProfileMutation.isPending ||
     isUsernameInvalid ||
@@ -251,14 +215,9 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
           <div className="h-4 w-36 bg-slate-200 dark:bg-slate-700/60 rounded" />
           <div className="h-8 w-48 bg-slate-200 dark:bg-slate-700/60 rounded" />
           <div className="h-4 w-72 bg-slate-200 dark:bg-slate-700/40 rounded" />
-          <div className="flex gap-2 border-b border-slate-200/70 dark:border-white/5 pb-2">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="h-8 w-24 bg-slate-200 dark:bg-slate-700/40 rounded-xl" />
-            ))}
-          </div>
         </div>
         {/* Skeleton Card */}
-        <div className="bg-white/80 dark:bg-[#1E232B] rounded-2xl md:rounded-[28px] p-6 md:p-8 space-y-8">
+        <div className="bg-[#EFF3F9] dark:bg-[#1E232B] rounded-2xl md:rounded-[28px] p-6 md:p-8 space-y-8 shadow-[-8px_-8px_16px_#FFFFFF,8px_8px_16px_#D1D9E6] dark:shadow-none">
           <div className="h-44 md:h-52 rounded-2xl bg-slate-200 dark:bg-slate-700/60" />
           <div className="flex gap-6 -mt-14 px-2">
             <div className="w-[104px] h-[104px] rounded-full bg-slate-300 dark:bg-slate-600" />
@@ -278,12 +237,12 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
   }
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-8">
-      {/* Header & Breadcrumbs */}
-      <header className="space-y-4">
-        {/* Breadcrumb Navigation with Back Button */}
-        <div className="flex items-center justify-between">
-          <nav className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+    <div className="w-full max-w-5xl mx-auto space-y-6">
+      {/* Top Header Breadcrumb / Meta Bar */}
+      <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-1">
+        <div>
+          {/* Breadcrumb Navigation with Back Button */}
+          <div className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5">
             <button
               type="button"
               onClick={() => navigate('/')}
@@ -300,66 +259,45 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
               {t('settingsTitle')}
             </button>
             <span className="text-slate-400 dark:text-slate-600">/</span>
-            <span className="text-[#7C3AED] dark:text-[#A78BFA] font-semibold">
+            <span className="text-[#8B70DF] dark:text-[#A78BFA] font-semibold">
               {t('settingsTabEditProfile')}
             </span>
-          </nav>
+          </div>
 
+          <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            {t('settingsTitle')}
+          </h1>
+          <p className="text-sm text-slate-600 dark:text-slate-400 mt-0.5 font-normal">
+            {t('profileHeaderSubtitle')}
+          </p>
+        </div>
+
+        {/* Header Right Actions: Quick Status Badge & Back to Settings */}
+        <div className="flex items-center gap-3 self-start sm:self-auto">
           <button
             type="button"
             onClick={handleBack}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-[#7C3AED] dark:text-slate-400 dark:hover:text-[#A78BFA] transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold text-slate-600 hover:text-[#7C3AED] dark:text-slate-300 dark:hover:text-[#A78BFA] bg-[#EFF3F9] dark:bg-[#1E232B] shadow-[-3px_-3px_8px_#FFFFFF,3px_3px_8px_#D1D9E6] dark:shadow-none transition-all cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Back to Settings</span>
+            <span>{t('backToSettings')}</span>
           </button>
-        </div>
 
-        {/* Title, Subtitle & Live Status Capsule */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-extrabold text-[#1E293B] dark:text-white tracking-tight">
-              {t('settingsTitle')}
-            </h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 font-normal">
-              {t('profileHeaderSubtitle')}
-            </p>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EFF3F9] dark:bg-[#1E232B] shadow-[-3px_-3px_8px_#FFFFFF,3px_3px_8px_#D1D9E6] dark:shadow-none border border-transparent dark:border-white/5 text-xs font-semibold">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-emerald-700 dark:text-emerald-400 font-medium">
+              {t('profileLiveSynced')}
+            </span>
           </div>
-
-          <div className="inline-flex items-center gap-2 self-start sm:self-auto px-3.5 py-1.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 text-xs font-semibold">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
-            <span>Profile Live &amp; Synced</span>
-          </div>
-        </div>
-
-        {/* Horizontal Tab Navigation */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none border-b border-slate-200/70 dark:border-white/5">
-          {tabs.map((tab) => {
-            const isActive = tab.id === 'profile';
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => handleTabClick(tab.id)}
-                className={`px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer ${
-                  isActive
-                    ? 'bg-[#7C3AED] text-white shadow-[0_4px_14px_rgba(124,58,237,0.35)] dark:bg-[#A78BFA] dark:text-[#10131C]'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/[0.04]'
-                }`}
-              >
-                {tab.label}
-              </button>
-            );
-          })}
         </div>
       </header>
 
-      {/* Main Profile Settings Panel Card */}
-      <section className="bg-white/80 dark:bg-[#1E232B] border border-slate-200/80 dark:border-white/5 shadow-sm backdrop-blur-md rounded-2xl md:rounded-[28px] p-6 md:p-8 space-y-8 relative overflow-hidden transition-all duration-300">
-        {/* Cover Banner & Avatar Row */}
+      {/* Main 'Edit Profile' Panel Card (Light Neumorphic Soft UI) */}
+      <div className="rounded-[28px] overflow-hidden p-6 md:p-8 space-y-8 bg-[#EFF3F9] dark:bg-[#1E232B] shadow-[-8px_-8px_16px_#FFFFFF,8px_8px_16px_#D1D9E6] dark:shadow-[-6px_-6px_14px_rgba(255,255,255,0.02),6px_6px_16px_rgba(0,0,0,0.6)] border border-transparent dark:border-white/5 transition-all">
+        {/* Cover Banner & Avatar Block */}
         <div className="space-y-4">
           {/* Cover Banner Container */}
-          <div className="relative w-full h-44 md:h-52 rounded-2xl md:rounded-3xl overflow-hidden shadow-inner flex items-end justify-end p-4 border border-slate-200/60 dark:border-white/5 bg-gradient-to-r from-[#e0d7ff] via-[#fed7aa] to-[#bfdbfe] dark:from-[#2a1d45] dark:via-[#3b2d54] dark:to-[#1e293b]">
+          <div className="relative w-full h-44 md:h-52 rounded-2xl overflow-hidden bg-gradient-to-r from-[#e0d7ff] via-[#fed7aa] to-[#bfdbfe] dark:from-[#2a1d45] dark:via-[#3b2d54] dark:to-[#1e293b] shadow-inner flex items-end justify-end p-4">
             {/* Real Cover Image if present */}
             {profile?.coverUrl && (
               <img
@@ -385,7 +323,7 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
               </div>
             )}
 
-            {/* Change Cover Button */}
+            {/* Change Cover Extruded Tactile Button */}
             <input
               type="file"
               ref={coverInputRef}
@@ -398,18 +336,18 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
               type="button"
               onClick={() => coverInputRef.current?.click()}
               disabled={uploadCoverMutation.isPending}
-              className="relative z-10 px-4 py-2 rounded-full flex items-center gap-2 text-xs font-semibold text-slate-800 dark:text-slate-200 bg-white/90 dark:bg-[#1E232B]/90 backdrop-blur-md border border-slate-200/80 dark:border-white/10 shadow-sm hover:bg-white dark:hover:bg-[#282F3A] transition-all cursor-pointer disabled:opacity-50"
+              className="relative z-10 px-4 py-2 rounded-full flex items-center gap-2 text-xs font-semibold text-slate-800 dark:text-slate-200 bg-[#EFF3F9] dark:bg-[#1E232B] shadow-[-4px_-4px_10px_#FFFFFF,4px_4px_10px_#D1D9E6] dark:shadow-none hover:shadow-[-6px_-6px_12px_#FFFFFF,6px_6px_12px_#C8D2E0] active:scale-95 transition-all cursor-pointer disabled:opacity-50"
             >
-              <Camera className="w-4 h-4 text-[#7C3AED] dark:text-[#A78BFA]" />
+              <Camera className="w-4 h-4 text-[#8B70DF] dark:text-[#A78BFA]" />
               <span>{t('btnChangeCover')}</span>
             </button>
           </div>
 
-          {/* Avatar Row */}
+          {/* Avatar & Identity Row */}
           <div className="flex flex-col md:flex-row items-center md:items-end justify-between gap-6 px-2 -mt-14 md:-mt-16 relative z-20">
-            {/* Left: 104px Circular Portrait + Identity Details */}
+            {/* Left: Avatar + Details */}
             <div className="flex flex-col md:flex-row items-center md:items-end gap-5 text-center md:text-left">
-              {/* 104px Avatar with Camera badge */}
+              {/* 104px Avatar with Upload Badge */}
               <div className="relative group shrink-0">
                 <input
                   type="file"
@@ -419,7 +357,7 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
                   className="hidden"
                   aria-label="Upload profile avatar"
                 />
-                <div className="w-[104px] h-[104px] rounded-full p-1 bg-white dark:bg-[#1E232B] shadow-md border-2 border-white dark:border-[#1E232B]">
+                <div className="w-[104px] h-[104px] rounded-full p-1 bg-[#EFF3F9] dark:bg-[#1E232B] shadow-[-6px_-6px_14px_#FFFFFF,6px_6px_14px_#D1D9E6] dark:shadow-none">
                   <div className="w-full h-full rounded-full bg-slate-100 dark:bg-[#222736] overflow-hidden flex items-center justify-center">
                     {profile?.avatarUrl && !avatarError ? (
                       <img
@@ -429,7 +367,7 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
                         className="w-full h-full rounded-full object-cover"
                       />
                     ) : (
-                      <div className="w-full h-full rounded-full bg-gradient-to-br from-indigo-500/15 to-purple-500/25 flex items-center justify-center font-bold text-2xl text-[#7C3AED] dark:text-[#A78BFA]">
+                      <div className="w-full h-full rounded-full bg-gradient-to-br from-indigo-500/15 to-purple-500/25 flex items-center justify-center font-bold text-2xl text-[#8B70DF] dark:text-[#A78BFA]">
                         {getInitials(profile?.fullName)}
                       </div>
                     )}
@@ -443,7 +381,7 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
                   disabled={uploadAvatarMutation.isPending}
                   title={t('btnUpdatePhoto')}
                   aria-label={t('btnUpdatePhoto')}
-                  className="absolute bottom-1 right-1 w-8 h-8 rounded-full bg-[#7C3AED] dark:bg-[#A78BFA] text-white dark:text-[#10131C] flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-transform cursor-pointer disabled:opacity-50"
+                  className="absolute bottom-1 right-1 w-8 h-8 rounded-full bg-[#8B70DF] dark:bg-[#A78BFA] text-white dark:text-[#10131C] flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-transform cursor-pointer disabled:opacity-50"
                 >
                   {uploadAvatarMutation.isPending ? (
                     <RefreshCw className="w-4 h-4 animate-spin" />
@@ -453,17 +391,19 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
                 </button>
               </div>
 
-              {/* Name & Handle */}
+              {/* Name & Verified Handle */}
               <div className="mb-1 space-y-1">
                 <div className="flex items-center justify-center md:justify-start gap-1.5">
                   <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
                     {profile?.fullName || fullName || 'User'}
                   </h2>
                   {profile?.isEmailVerified && (
-                    <CheckCircle
-                      className="w-4 h-4 text-blue-500 dark:text-blue-400 fill-blue-500/20 shrink-0"
-                      aria-label="Verified user"
-                    />
+                    <span
+                      className="w-5 h-5 rounded-full bg-[#8B70DF] text-white flex items-center justify-center shadow-sm shrink-0"
+                      title="Verified User"
+                    >
+                      <Check className="w-3 h-3 stroke-[3]" />
+                    </span>
                   )}
                 </div>
                 <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 font-medium">
@@ -472,19 +412,20 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
               </div>
             </div>
 
-            {/* Right: Social Stats Capsule (Followers • Following only) */}
-            <div className="rounded-2xl px-6 py-3 flex items-center gap-6 self-center md:self-end mb-1 bg-white/70 dark:bg-[#12141C] border border-slate-200/80 dark:border-white/5 shadow-sm">
+            {/* Right: Mandatory Stats Capsule (Followers & Following only) */}
+            <div className="rounded-2xl px-6 py-3 flex items-center gap-6 self-center md:self-end mb-1 bg-[#EFF3F9] dark:bg-[#12141C] shadow-[-4px_-4px_10px_#FFFFFF,4px_4px_10px_#D8E0ED] dark:shadow-none border border-transparent dark:border-white/5">
               <div className="text-center">
-                <span className="block text-base md:text-lg font-bold text-[#7C3AED] dark:text-[#A78BFA]">
+                <span className="block text-lg md:text-xl font-bold text-[#6448b5] dark:text-[#A78BFA]">
                   {formatMetricCount(profile?.followersCount ?? 1400, '1.4k')}
                 </span>
                 <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
                   {t('statFollowers')}
                 </span>
               </div>
-              <div className="w-px h-8 bg-slate-200 dark:bg-white/10" />
+              {/* Vertical Divider */}
+              <div className="w-px h-8 bg-[#D1D9E6] shadow-[1px_0_0_#FFFFFF] dark:bg-white/10 dark:shadow-none" />
               <div className="text-center">
-                <span className="block text-base md:text-lg font-bold text-[#7C3AED] dark:text-[#A78BFA]">
+                <span className="block text-lg md:text-xl font-bold text-[#6448b5] dark:text-[#A78BFA]">
                   {formatMetricCount(profile?.followingCount ?? 520, '520')}
                 </span>
                 <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
@@ -590,224 +531,251 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
           </div>
         )}
 
-        {/* Profile Form Section (Directly from inputs to Bio; NO Mindful Presence State) */}
+        {/* Profile Form Section (Directly from inputs to Bio; NO Mindful Presence) */}
         <form onSubmit={handleSubmit} className="space-y-6 pt-2">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Field 1: Display Name */}
+            {/* Row 1: Field 1 - Display Name */}
             <div className="space-y-2">
               <label
-                htmlFor="profile-fullName"
-                className="block text-xs font-semibold text-slate-700 dark:text-slate-300 tracking-wide"
+                htmlFor="displayName"
+                className="block text-sm font-semibold text-slate-800 dark:text-slate-200"
               >
                 {t('fieldDisplayName')}
               </label>
               <div className="relative flex items-center">
-                <span className="absolute left-3.5 text-slate-400 dark:text-slate-500 pointer-events-none">
-                  <User className="w-4 h-4" />
+                <span className="absolute left-4 text-slate-400 dark:text-slate-500 pointer-events-none">
+                  <User className="w-5 h-5" />
                 </span>
                 <input
-                  id="profile-fullName"
+                  id="displayName"
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Your full name"
+                  placeholder="Alex Morgan"
                   maxLength={100}
-                  className="w-full pl-10 pr-4 py-3 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-sm text-slate-800 dark:text-white font-medium border border-transparent dark:border-[#222634] shadow-[inset_2px_2px_5px_#D1D9E6,inset_-2px_-2px_5px_#FFFFFF] dark:shadow-[inset_3px_3px_7px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.03)] focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none focus:ring-1 focus:ring-[#7C3AED] dark:focus:ring-[#A78BFA] transition-all"
+                  className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-slate-800 dark:text-white font-medium border-none shadow-[inset_3px_3px_6px_#D1D9E6,inset_-3px_-3px_6px_#FFFFFF] dark:shadow-[inset_3px_3px_6px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.02)] focus:ring-2 focus:ring-[#8B70DF]/40 focus:outline-none transition-all"
                 />
               </div>
             </div>
 
-            {/* Field 2: Username with Live Debounced Availability Badge */}
+            {/* Row 1: Field 2 - Username Handle */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <label
-                  htmlFor="profile-username"
-                  className="block text-xs font-semibold text-slate-700 dark:text-slate-300 tracking-wide"
+                  htmlFor="username"
+                  className="block text-sm font-semibold text-slate-800 dark:text-slate-200"
                 >
                   {t('fieldUsername')}
                 </label>
-                {/* Availability Badge */}
+                {/* Live Availability Badge */}
                 {isUsernameInvalid ? (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-rose-600 dark:text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2 py-0.5 rounded-full">
+                  <span className="text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-100/70 dark:bg-rose-500/10 px-2.5 py-0.5 rounded-full flex items-center gap-1">
                     <AlertCircle className="w-3 h-3" />
-                    <span>Min 3 characters</span>
+                    <span>Min 3 chars</span>
                   </span>
                 ) : shouldCheckUsername ? (
                   isCheckingUsername || isDebouncing ? (
-                    <span className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-500 dark:text-slate-400">
-                      <RefreshCw className="w-3 h-3 animate-spin text-[#7C3AED] dark:text-[#A78BFA]" />
+                    <span className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                      <RefreshCw className="w-3 h-3 animate-spin text-[#8B70DF]" />
                       <span>Checking...</span>
                     </span>
                   ) : checkData?.available === true ? (
-                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+                    <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-100/70 dark:bg-emerald-500/10 px-2.5 py-0.5 rounded-full flex items-center gap-1">
                       <Check className="w-3 h-3 stroke-[3]" />
                       <span>{t('badgeAvailable')}</span>
                     </span>
                   ) : checkData?.available === false ? (
-                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-rose-600 dark:text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2 py-0.5 rounded-full">
+                    <span className="text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-100/70 dark:bg-rose-500/10 px-2.5 py-0.5 rounded-full flex items-center gap-1">
                       <AlertCircle className="w-3 h-3" />
                       <span>{t('badgeTaken')}</span>
                     </span>
                   ) : null
                 ) : (
                   profile?.username && (
-                    <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500">
+                    <span className="text-xs font-medium text-slate-400 dark:text-slate-500">
                       Current
                     </span>
                   )
                 )}
               </div>
               <div className="relative flex items-center">
-                <span className="absolute left-3.5 text-slate-400 dark:text-slate-500 pointer-events-none">
-                  <AtSign className="w-4 h-4" />
+                <span className="absolute left-4 text-slate-400 dark:text-slate-500 pointer-events-none">
+                  <AtSign className="w-5 h-5" />
                 </span>
                 <input
-                  id="profile-username"
+                  id="username"
                   type="text"
                   value={username}
                   onChange={(e) =>
                     setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_.]/g, ''))
                   }
-                  placeholder="username"
+                  placeholder="alexmorgan"
                   maxLength={30}
-                  className="w-full pl-10 pr-4 py-3 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-sm text-slate-800 dark:text-white font-medium border border-transparent dark:border-[#222634] shadow-[inset_2px_2px_5px_#D1D9E6,inset_-2px_-2px_5px_#FFFFFF] dark:shadow-[inset_3px_3px_7px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.03)] focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none focus:ring-1 focus:ring-[#7C3AED] dark:focus:ring-[#A78BFA] transition-all"
+                  className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-slate-800 dark:text-white font-medium border-none shadow-[inset_3px_3px_6px_#D1D9E6,inset_-3px_-3px_6px_#FFFFFF] dark:shadow-[inset_3px_3px_6px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.02)] focus:ring-2 focus:ring-[#8B70DF]/40 focus:outline-none transition-all"
                 />
               </div>
             </div>
 
-            {/* Field 3: Pronouns / Gender Dropdown */}
+            {/* Row 2: Field 3 - Gender */}
             <div className="space-y-2">
               <label
-                htmlFor="profile-gender"
-                className="block text-xs font-semibold text-slate-700 dark:text-slate-300 tracking-wide"
+                htmlFor="gender"
+                className="block text-sm font-semibold text-slate-800 dark:text-slate-200"
               >
-                {t('fieldPronouns')}
+                {t('fieldGender')}
               </label>
               <div className="relative flex items-center">
-                <span className="absolute left-3.5 text-slate-400 dark:text-slate-500 pointer-events-none">
-                  <Sparkles className="w-4 h-4" />
+                <span className="absolute left-4 text-slate-400 dark:text-slate-500 pointer-events-none">
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle cx="12" cy="8" r="5" />
+                    <path d="M12 13v8M9 18h6" />
+                  </svg>
                 </span>
                 <select
-                  id="profile-gender"
+                  id="gender"
                   value={gender}
-                  onChange={(e) => setGender(e.target.value)}
-                  className="w-full pl-10 pr-10 py-3 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-sm text-slate-800 dark:text-white font-medium border border-transparent dark:border-[#222634] shadow-[inset_2px_2px_5px_#D1D9E6,inset_-2px_-2px_5px_#FFFFFF] dark:shadow-[inset_3px_3px_7px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.03)] focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none focus:ring-1 focus:ring-[#7C3AED] dark:focus:ring-[#A78BFA] transition-all appearance-none cursor-pointer"
+                  onChange={(e) => setGender(e.target.value as UserGender)}
+                  className="w-full pl-12 pr-10 py-3.5 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-slate-800 dark:text-white font-medium border-none shadow-[inset_3px_3px_6px_#D1D9E6,inset_-3px_-3px_6px_#FFFFFF] dark:shadow-[inset_3px_3px_6px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.02)] focus:ring-2 focus:ring-[#8B70DF]/40 focus:outline-none transition-all appearance-none cursor-pointer"
                 >
-                  {PRONOUN_OPTIONS.map((option) => (
+                  {GENDER_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
-                      {option.label}
+                      {t(option.labelKey)}
                     </option>
                   ))}
-                  {gender && !isKnownPronoun && (
-                    <option value={gender}>{gender}</option>
-                  )}
                 </select>
-                <span className="absolute right-3.5 text-slate-400 dark:text-slate-500 pointer-events-none">
+                <span className="absolute right-4 text-slate-400 dark:text-slate-500 pointer-events-none">
                   <ChevronDown className="w-4 h-4" />
                 </span>
               </div>
             </div>
 
-            {/* Field 4: Location */}
+            {/* Row 2: Field 4 - Date of Birth */}
             <div className="space-y-2">
               <label
-                htmlFor="profile-location"
-                className="block text-xs font-semibold text-slate-700 dark:text-slate-300 tracking-wide"
+                htmlFor="dob"
+                className="block text-sm font-semibold text-slate-800 dark:text-slate-200"
+              >
+                {t('fieldDateOfBirth')}
+              </label>
+              <div className="relative flex items-center">
+                <span className="absolute left-4 text-slate-400 dark:text-slate-500 pointer-events-none">
+                  <Calendar className="w-5 h-5" />
+                </span>
+                <input
+                  id="dob"
+                  type="date"
+                  value={dateOfBirth}
+                  onChange={(e) => setDateOfBirth(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-slate-800 dark:text-white font-medium border-none shadow-[inset_3px_3px_6px_#D1D9E6,inset_-3px_-3px_6px_#FFFFFF] dark:shadow-[inset_3px_3px_6px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.02)] focus:ring-2 focus:ring-[#8B70DF]/40 focus:outline-none transition-all cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Row 3: Field 5 - Location */}
+            <div className="space-y-2">
+              <label
+                htmlFor="location"
+                className="block text-sm font-semibold text-slate-800 dark:text-slate-200"
               >
                 {t('fieldLocation')}
               </label>
               <div className="relative flex items-center">
-                <span className="absolute left-3.5 text-slate-400 dark:text-slate-500 pointer-events-none">
-                  <MapPin className="w-4 h-4" />
+                <span className="absolute left-4 text-slate-400 dark:text-slate-500 pointer-events-none">
+                  <MapPin className="w-5 h-5" />
                 </span>
                 <input
-                  id="profile-location"
+                  id="location"
                   type="text"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   placeholder="San Francisco, CA"
                   maxLength={100}
-                  className="w-full pl-10 pr-4 py-3 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-sm text-slate-800 dark:text-white font-medium border border-transparent dark:border-[#222634] shadow-[inset_2px_2px_5px_#D1D9E6,inset_-2px_-2px_5px_#FFFFFF] dark:shadow-[inset_3px_3px_7px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.03)] focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none focus:ring-1 focus:ring-[#7C3AED] dark:focus:ring-[#A78BFA] transition-all"
+                  className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-slate-800 dark:text-white font-medium border-none shadow-[inset_3px_3px_6px_#D1D9E6,inset_-3px_-3px_6px_#FFFFFF] dark:shadow-[inset_3px_3px_6px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.02)] focus:ring-2 focus:ring-[#8B70DF]/40 focus:outline-none transition-all"
                 />
               </div>
             </div>
 
-            {/* Field 5: Website / Portfolio */}
-            <div className="space-y-2 md:col-span-2">
+            {/* Row 3: Field 6 - Website / Portfolio */}
+            <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <label
-                  htmlFor="profile-website"
-                  className="block text-xs font-semibold text-slate-700 dark:text-slate-300 tracking-wide"
+                  htmlFor="website"
+                  className="block text-sm font-semibold text-slate-800 dark:text-slate-200"
                 >
-                  {t('fieldWebsite')}
+                  {t('fieldWebsitePortfolio')}
                 </label>
                 {website.trim() && (
                   <a
                     href={formattedWebsiteUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#7C3AED] dark:text-[#A78BFA] hover:underline"
+                    className="text-xs font-semibold text-[#8B70DF] dark:text-[#A78BFA] hover:underline flex items-center gap-1"
                   >
-                    <span>Preview</span>
-                    <ExternalLink className="w-3 h-3" />
+                    <span>{t('previewLink')}</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
                   </a>
                 )}
               </div>
               <div className="relative flex items-center">
-                <span className="absolute left-3.5 text-slate-400 dark:text-slate-500 pointer-events-none">
-                  <Globe className="w-4 h-4" />
+                <span className="absolute left-4 text-slate-400 dark:text-slate-500 pointer-events-none">
+                  <Globe className="w-5 h-5" />
                 </span>
                 <input
-                  id="profile-website"
+                  id="website"
                   type="url"
                   value={website}
                   onChange={(e) => setWebsite(e.target.value)}
-                  placeholder="https://yourportfolio.com"
-                  maxLength={200}
-                  className="w-full pl-10 pr-4 py-3 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-sm text-slate-800 dark:text-white font-medium border border-transparent dark:border-[#222634] shadow-[inset_2px_2px_5px_#D1D9E6,inset_-2px_-2px_5px_#FFFFFF] dark:shadow-[inset_3px_3px_7px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.03)] focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none focus:ring-1 focus:ring-[#7C3AED] dark:focus:ring-[#A78BFA] transition-all"
+                  placeholder="https://alexmorgan.design"
+                  maxLength={255}
+                  className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-slate-800 dark:text-white font-medium border-none shadow-[inset_3px_3px_6px_#D1D9E6,inset_-3px_-3px_6px_#FFFFFF] dark:shadow-[inset_3px_3px_6px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.02)] focus:ring-2 focus:ring-[#8B70DF]/40 focus:outline-none transition-all"
                 />
               </div>
             </div>
 
-            {/* Field 6: Bio / About Me with Character Counter (NO Mindful Presence) */}
-            <div className="space-y-2 md:col-span-2">
+            {/* Row 4: Field 7 - Bio / About Me (Full Width, NO Mindful Presence) */}
+            <div className="md:col-span-2 space-y-2">
               <div className="flex items-center justify-between">
                 <label
-                  htmlFor="profile-bio"
-                  className="block text-xs font-semibold text-slate-700 dark:text-slate-300 tracking-wide"
+                  htmlFor="bio"
+                  className="block text-sm font-semibold text-slate-800 dark:text-slate-200"
                 >
-                  {t('fieldBio')}
+                  {t('fieldBioAboutMe')}
                 </label>
-                <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
-                  <span className="font-semibold text-[#7C3AED] dark:text-[#A78BFA]">
-                    {Math.max(0, 240 - bio.length)}
-                  </span>{' '}
-                  {t('charCounter')}
+                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                  {bio.length} / 300
                 </span>
               </div>
               <div className="relative">
                 <textarea
-                  id="profile-bio"
+                  id="bio"
                   rows={3}
-                  maxLength={240}
+                  maxLength={300}
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
-                  placeholder="Share a brief bio or personal philosophy..."
-                  className="w-full p-4 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-sm text-slate-800 dark:text-white font-medium border border-transparent dark:border-[#222634] shadow-[inset_2px_2px_5px_#D1D9E6,inset_-2px_-2px_5px_#FFFFFF] dark:shadow-[inset_3px_3px_7px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.03)] focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none focus:ring-1 focus:ring-[#7C3AED] dark:focus:ring-[#A78BFA] transition-all resize-none leading-relaxed"
+                  placeholder="Product architect & systems thinker. Crafting calm, intentional human software. ☕🌱"
+                  className="w-full p-4 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-slate-800 dark:text-white font-medium border-none shadow-[inset_3px_3px_6px_#D1D9E6,inset_-3px_-3px_6px_#FFFFFF] dark:shadow-[inset_3px_3px_6px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.02)] focus:ring-2 focus:ring-[#8B70DF]/40 focus:outline-none transition-all resize-none leading-relaxed"
                 />
               </div>
             </div>
           </div>
 
-          {/* Card Bottom Divider */}
-          <div className="h-px w-full bg-slate-200/80 dark:bg-white/10 my-6" />
+          {/* Card Bottom Divider Well */}
+          <div className="h-px w-full bg-[#D1D9E6] shadow-[0_1px_0_#FFFFFF] dark:bg-white/10 dark:shadow-none my-6" />
 
           {/* Actions Footer */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-1">
-            {/* Real-time synchronization note */}
-            <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+            {/* Privacy auto-sync guarantee note with shield */}
+            <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-xs font-medium">
               <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-              <span>Changes synchronize immediately across your account.</span>
+              <span>{t('profileSyncGuarantee')}</span>
             </div>
 
             {/* Action Buttons */}
@@ -816,14 +784,14 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
                 type="button"
                 onClick={handleCancel}
                 disabled={updateProfileMutation.isPending}
-                className="px-6 py-2.5 rounded-full text-xs md:text-sm font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 transition-all cursor-pointer disabled:opacity-50"
+                className="px-6 py-2.5 rounded-full text-xs md:text-sm font-semibold text-slate-700 dark:text-slate-300 bg-[#EFF3F9] dark:bg-[#252A36] shadow-[-4px_-4px_10px_#FFFFFF,4px_4px_10px_#D1D9E6] dark:shadow-none hover:shadow-[-6px_-6px_12px_#FFFFFF,6px_6px_12px_#C8D2E0] active:scale-95 transition-all cursor-pointer disabled:opacity-50"
               >
                 {t('btnCancel')}
               </button>
               <button
                 type="submit"
                 disabled={isSubmitDisabled}
-                className="px-7 py-2.5 rounded-full text-xs md:text-sm font-bold text-white bg-[#7C3AED] hover:bg-[#6D28D9] dark:bg-[#A78BFA] dark:hover:bg-[#BCA4FF] dark:text-[#10131C] shadow-[0_4px_16px_rgba(124,58,237,0.35)] dark:shadow-[0_4px_16px_rgba(167,139,250,0.35)] transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                className="px-7 py-2.5 rounded-full text-xs md:text-sm font-bold text-white bg-gradient-to-r from-[#8B70DF] to-[#7C3AED] shadow-[0_8px_20px_rgba(139,112,223,0.35),-4px_-4px_10px_#FFFFFF] dark:shadow-[0_8px_20px_rgba(139,112,223,0.35)] hover:shadow-[0_10px_24px_rgba(139,112,223,0.45),-4px_-4px_12px_#FFFFFF] active:scale-98 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 {updateProfileMutation.isPending ? (
                   <>
@@ -840,7 +808,7 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
             </div>
           </div>
         </form>
-      </section>
+      </div>
     </div>
   );
 };
