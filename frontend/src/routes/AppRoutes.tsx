@@ -79,7 +79,7 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/profile"
         element={
-          <AppLayout>
+          <AppLayout showRightRail={false}>
             <SettingsView />
           </AppLayout>
         }
@@ -87,7 +87,7 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/settings"
         element={
-          <AppLayout>
+          <AppLayout showRightRail={false}>
             <SettingsView />
           </AppLayout>
         }
@@ -95,7 +95,7 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/settings/profile"
         element={
-          <AppLayout>
+          <AppLayout showRightRail={false}>
             <SettingsView />
           </AppLayout>
         }
