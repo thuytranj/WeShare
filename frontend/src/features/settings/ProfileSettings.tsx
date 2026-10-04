@@ -38,6 +38,20 @@ const PRONOUN_OPTIONS = [
   { value: 'prefer-not-to-say', label: 'prefer-not-to-say' },
 ];
 
+const PRONOUN_TO_GENDER_MAP: Record<string, string> = {
+  'he/him': 'MALE',
+  'she/her': 'FEMALE',
+  'they/them': 'OTHER',
+  'prefer-not-to-say': 'PREFER_NOT_TO_SAY',
+};
+
+const GENDER_TO_PRONOUN_MAP: Record<string, string> = {
+  MALE: 'he/him',
+  FEMALE: 'she/her',
+  OTHER: 'they/them',
+  PREFER_NOT_TO_SAY: 'prefer-not-to-say',
+};
+
 function formatMetricCount(count: number | undefined | null, defaultFallback: string): string {
   if (count === undefined || count === null) {
     return defaultFallback;
@@ -90,7 +104,10 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
       setBio(profile.bio ?? '');
       setLocation(profile.location ?? '');
       setWebsite(profile.website ?? '');
-      setGender(profile.gender ?? '');
+      const mappedPronoun = profile.gender
+        ? GENDER_TO_PRONOUN_MAP[profile.gender] || profile.gender
+        : '';
+      setGender(mappedPronoun);
     }
   }, [profile]);
 
@@ -101,6 +118,7 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
   // Live debounced username check
   const isUsernameChanged = profile ? username.trim() !== profile.username : false;
   const shouldCheckUsername = isUsernameChanged && username.trim().length >= 3;
+  const isUsernameInvalid = isUsernameChanged && username.trim().length < 3;
   const usernameToCheck = shouldCheckUsername ? username.trim() : '';
 
   const {
@@ -171,24 +189,41 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
       setBio(profile.bio ?? '');
       setLocation(profile.location ?? '');
       setWebsite(profile.website ?? '');
-      setGender(profile.gender ?? '');
+      const mappedPronoun = profile.gender
+        ? GENDER_TO_PRONOUN_MAP[profile.gender] || profile.gender
+        : '';
+      setGender(mappedPronoun);
     }
     updateProfileMutation.reset();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (shouldCheckUsername && checkData?.available === false) {
+    if (
+      isUsernameInvalid ||
+      (shouldCheckUsername &&
+        (checkData?.available === false || isCheckingUsername || isDebouncing))
+    ) {
       return;
     }
+
+    const trimmedWebsite = website.trim();
+    const normalizedWebsite = trimmedWebsite
+      ? trimmedWebsite.startsWith('http://') || trimmedWebsite.startsWith('https://')
+        ? trimmedWebsite
+        : `https://${trimmedWebsite}`
+      : undefined;
+
+    const mappedGender = PRONOUN_TO_GENDER_MAP[gender] || undefined;
+
     try {
       await updateProfileMutation.mutateAsync({
-        fullName: fullName.trim(),
+        fullName: fullName.trim() || undefined,
         username: username.trim(),
         bio: bio.trim(),
         location: location.trim(),
-        website: website.trim(),
-        gender: gender || undefined,
+        website: normalizedWebsite,
+        gender: mappedGender,
       });
     } catch {
       // Error handled by updateProfileMutation.isError
@@ -204,8 +239,9 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
   const isKnownPronoun = PRONOUN_OPTIONS.some((opt) => opt.value === gender);
   const isSubmitDisabled =
     updateProfileMutation.isPending ||
-    (shouldCheckUsername && checkData?.available === false) ||
-    isCheckingUsername;
+    isUsernameInvalid ||
+    (shouldCheckUsername &&
+      (checkData?.available === false || isCheckingUsername || isDebouncing));
 
   if (isLoading && !profile) {
     return (
@@ -591,7 +627,12 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
                   {t('fieldUsername')}
                 </label>
                 {/* Availability Badge */}
-                {shouldCheckUsername ? (
+                {isUsernameInvalid ? (
+                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-rose-600 dark:text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2 py-0.5 rounded-full">
+                    <AlertCircle className="w-3 h-3" />
+                    <span>Min 3 characters</span>
+                  </span>
+                ) : shouldCheckUsername ? (
                   isCheckingUsername || isDebouncing ? (
                     <span className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-500 dark:text-slate-400">
                       <RefreshCw className="w-3 h-3 animate-spin text-[#7C3AED] dark:text-[#A78BFA]" />
