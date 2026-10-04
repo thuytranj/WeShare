@@ -17,18 +17,20 @@ function Calendar({
       className={cn('p-3 bg-white dark:bg-[#1E232B] rounded-2xl select-none', className)}
       classNames={{
         root: 'w-fit',
-        months: 'flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0',
-        month: 'space-y-3',
-        month_caption: 'flex justify-center pt-1 relative items-center mb-3 h-7',
+        months: 'relative flex flex-col gap-4',
+        month: 'space-y-4',
+        month_caption: 'flex items-center justify-center h-7 w-full',
         caption_label: 'text-sm font-semibold text-slate-800 dark:text-slate-100 select-none',
-        nav: 'space-x-1 flex items-center',
+        nav: 'flex items-center justify-between absolute top-0 inset-x-0 w-full h-7 pointer-events-none z-10 px-1',
         button_previous: cn(
-          'absolute left-1 h-7 w-7 bg-transparent p-0 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white',
-          'flex items-center justify-center rounded-lg border border-slate-200/60 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors outline-none focus:outline-none'
+          'pointer-events-auto h-7 w-7 bg-transparent p-0 flex items-center justify-center rounded-md',
+          'border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-slate-800',
+          'text-slate-600 dark:text-slate-300 transition-colors opacity-70 hover:opacity-100 outline-none focus:outline-none'
         ),
         button_next: cn(
-          'absolute right-1 h-7 w-7 bg-transparent p-0 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white',
-          'flex items-center justify-center rounded-lg border border-slate-200/60 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors outline-none focus:outline-none'
+          'pointer-events-auto h-7 w-7 bg-transparent p-0 flex items-center justify-center rounded-md',
+          'border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-slate-800',
+          'text-slate-600 dark:text-slate-300 transition-colors opacity-70 hover:opacity-100 outline-none focus:outline-none'
         ),
         month_grid: 'w-full border-collapse space-y-1',
         weekdays: 'flex justify-between w-full mb-1',
@@ -50,9 +52,9 @@ function Calendar({
       components={{
         Chevron: ({ orientation, className: chevronClassName, ...chevronProps }) => {
           if (orientation === 'left') {
-            return <ChevronLeft className={cn('h-4 w-4', chevronClassName)} {...chevronProps} />;
+            return <ChevronLeft size={16} className={cn('h-4 w-4', chevronClassName)} {...chevronProps} />;
           }
-          return <ChevronRight className={cn('h-4 w-4', chevronClassName)} {...chevronProps} />;
+          return <ChevronRight size={16} className={cn('h-4 w-4', chevronClassName)} {...chevronProps} />;
         },
       }}
       {...props}
