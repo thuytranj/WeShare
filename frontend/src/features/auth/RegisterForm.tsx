@@ -13,8 +13,8 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { Card } from '../../components/ui/Card';
-import { Input } from '../../components/ui/Input';
-import { Button } from '../../components/ui/Button';
+import { Input } from '../../components/ui/input';
+import { Button } from '../../components/ui/button';
 import { OtpInput } from '../../components/ui/OtpInput';
 import { useTranslation } from '../../stores/i18n.store';
 import { useRegister, useVerifyOtp, useResendOtp } from '../../hooks/useAuth';
