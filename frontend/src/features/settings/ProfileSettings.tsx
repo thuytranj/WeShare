@@ -653,17 +653,16 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
                 >
                   <SelectTrigger
                     id="gender"
-                    className="w-full pl-10 pr-4 py-2.5 md:py-3 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-xs md:text-sm text-slate-800 dark:text-white font-medium border-none shadow-[inset_3px_3px_6px_#D1D9E6,inset_-3px_-3px_6px_#FFFFFF] dark:shadow-[inset_3px_3px_6px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.02)] focus-visible:ring-2 focus-visible:ring-[#8B70DF]/40 outline-none transition-all cursor-pointer h-auto"
+                    className="w-full pl-10 pr-4 h-10 py-2.5 text-xs md:text-sm font-medium"
                   >
                     <SelectValue placeholder={t('fieldGender')} />
                   </SelectTrigger>
-                  <SelectContent className="bg-white dark:bg-[#1E232B] border border-slate-200 dark:border-white/10 shadow-xl rounded-2xl z-50">
+                  <SelectContent>
                     <SelectGroup>
                       {GENDER_OPTIONS.map((option) => (
                         <SelectItem
                           key={option.value}
                           value={option.value}
-                          className="text-xs md:text-sm text-slate-800 dark:text-slate-200 cursor-pointer rounded-xl"
                         >
                           {t(option.labelKey)}
                         </SelectItem>

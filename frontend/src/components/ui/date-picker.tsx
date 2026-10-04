@@ -55,28 +55,31 @@ export function DatePicker({
         id={id}
         disabled={disabled}
         className={cn(
-          'w-full flex items-center justify-start text-left font-normal transition-all outline-none cursor-pointer',
-          'neu-inset rounded-2xl h-10 px-4 py-2.5 text-xs md:text-sm',
+          'w-full flex h-10 items-center justify-start text-left font-normal transition-all outline-none cursor-pointer',
+          'neu-inset rounded-2xl px-4 py-2.5 text-xs md:text-sm font-medium',
           'border-none shadow-[inset_3px_3px_6px_#D1D9E6,inset_-3px_-3px_6px_#FFFFFF] dark:shadow-[inset_3px_3px_6px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.02)]',
           !parsedDate
             ? 'text-slate-400 dark:text-slate-500'
-            : 'text-slate-800 dark:text-white font-medium',
+            : 'text-slate-800 dark:text-white',
           disabled && 'opacity-50 cursor-not-allowed pointer-events-none',
           className
         )}
       >
         <CalendarIcon className="w-4 h-4 mr-2.5 text-slate-400 dark:text-slate-500 shrink-0" />
-        {parsedDate ? format(parsedDate, 'PPP') : <span>{placeholder}</span>}
+        {parsedDate ? (
+          <span>{format(parsedDate, 'PPP')}</span>
+        ) : (
+          <span className="text-slate-400 dark:text-slate-500">{placeholder}</span>
+        )}
       </PopoverTrigger>
       <PopoverContent
-        className="w-auto p-0 z-50 bg-white dark:bg-[#1E232B] rounded-2xl shadow-xl border border-slate-200 dark:border-white/10"
+        className="w-auto p-0 z-50 bg-white dark:bg-[#1E232B] rounded-2xl shadow-xl border border-slate-200/80 dark:border-white/10 outline-none"
         align="start"
       >
         <Calendar
           mode="single"
           selected={parsedDate}
           onSelect={handleSelect}
-          autoFocus
         />
       </PopoverContent>
     </Popover>
