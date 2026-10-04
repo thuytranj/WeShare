@@ -223,12 +223,12 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
             <div className="w-[104px] h-[104px] rounded-full bg-slate-300 dark:bg-slate-600" />
             <div className="space-y-2 pt-14">
               <div className="h-5 w-40 bg-slate-200 dark:bg-slate-700/60 rounded" />
-              <div className="h-4 w-28 bg-slate-200 dark:bg-slate-700/40 rounded" />
+              <div className="h-3.5 w-24 bg-slate-200 dark:bg-slate-700/40 rounded" />
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="h-12 bg-slate-200 dark:bg-slate-700/30 rounded-2xl" />
+              <div key={i} className="h-10 bg-slate-200 dark:bg-slate-700/30 rounded-2xl" />
             ))}
           </div>
         </div>
@@ -336,9 +336,9 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
               type="button"
               onClick={() => coverInputRef.current?.click()}
               disabled={uploadCoverMutation.isPending}
-              className="relative z-10 px-4 py-2 rounded-full flex items-center gap-2 text-xs font-semibold text-slate-800 dark:text-slate-200 bg-[#EFF3F9] dark:bg-[#1E232B] shadow-[-4px_-4px_10px_#FFFFFF,4px_4px_10px_#D1D9E6] dark:shadow-none hover:shadow-[-6px_-6px_12px_#FFFFFF,6px_6px_12px_#C8D2E0] active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+              className="relative z-10 px-3.5 py-1.5 rounded-full flex items-center gap-1.5 text-xs font-semibold text-slate-800 dark:text-slate-200 bg-[#EFF3F9] dark:bg-[#1E232B] shadow-[-4px_-4px_10px_#FFFFFF,4px_4px_10px_#D1D9E6] dark:shadow-none hover:shadow-[-6px_-6px_12px_#FFFFFF,6px_6px_12px_#C8D2E0] active:scale-95 transition-all cursor-pointer disabled:opacity-50"
             >
-              <Camera className="w-4 h-4 text-[#8B70DF] dark:text-[#A78BFA]" />
+              <Camera className="w-3.5 h-3.5 text-[#8B70DF] dark:text-[#A78BFA]" />
               <span>{t('btnChangeCover')}</span>
             </button>
           </div>
@@ -357,7 +357,7 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
                   className="hidden"
                   aria-label="Upload profile avatar"
                 />
-                <div className="w-[104px] h-[104px] rounded-full p-1 bg-[#EFF3F9] dark:bg-[#1E232B] shadow-[-6px_-6px_14px_#FFFFFF,6px_6px_14px_#D1D9E6] dark:shadow-none">
+                <div className="w-[90px] h-[90px] rounded-full p-1 bg-[#EFF3F9] dark:bg-[#1E232B] shadow-[-6px_-6px_14px_#FFFFFF,6px_6px_14px_#D1D9E6] dark:shadow-none">
                   <div className="w-full h-full rounded-full bg-slate-100 dark:bg-[#222736] overflow-hidden flex items-center justify-center">
                     {profile?.avatarUrl && !avatarError ? (
                       <img
@@ -394,28 +394,28 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
               {/* Name & Verified Handle */}
               <div className="mb-1 space-y-1">
                 <div className="flex items-center justify-center md:justify-start gap-1.5">
-                  <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+                  <h2 className="text-base md:text-lg font-bold text-slate-900 dark:text-white tracking-tight">
                     {profile?.fullName || fullName || 'User'}
                   </h2>
                   {profile?.isEmailVerified && (
                     <span
-                      className="w-5 h-5 rounded-full bg-[#8B70DF] text-white flex items-center justify-center shadow-sm shrink-0"
+                      className="w-4 h-4 rounded-full bg-[#8B70DF] text-white flex items-center justify-center shadow-sm shrink-0"
                       title="Verified User"
                     >
-                      <Check className="w-3 h-3 stroke-[3]" />
+                      <Check className="w-2.5 h-2.5 stroke-[3]" />
                     </span>
                   )}
                 </div>
-                <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 font-medium">
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                   @{profile?.username || username || 'username'}
                 </p>
               </div>
             </div>
 
             {/* Right: Mandatory Stats Capsule (Followers & Following only) */}
-            <div className="rounded-2xl px-6 py-3 flex items-center gap-6 self-center md:self-end mb-1 bg-[#EFF3F9] dark:bg-[#12141C] shadow-[-4px_-4px_10px_#FFFFFF,4px_4px_10px_#D8E0ED] dark:shadow-none border border-transparent dark:border-white/5">
+            <div className="rounded-2xl px-5 py-2.5 flex items-center gap-5 self-center md:self-end mb-1 bg-[#EFF3F9] dark:bg-[#12141C] shadow-[-4px_-4px_10px_#FFFFFF,4px_4px_10px_#D8E0ED] dark:shadow-none border border-transparent dark:border-white/5">
               <div className="text-center">
-                <span className="block text-lg md:text-xl font-bold text-[#6448b5] dark:text-[#A78BFA]">
+                <span className="block text-base md:text-lg font-bold text-[#6448b5] dark:text-[#A78BFA]">
                   {formatMetricCount(profile?.followersCount ?? 1400, '1.4k')}
                 </span>
                 <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
@@ -423,9 +423,9 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
                 </span>
               </div>
               {/* Vertical Divider */}
-              <div className="w-px h-8 bg-[#D1D9E6] shadow-[1px_0_0_#FFFFFF] dark:bg-white/10 dark:shadow-none" />
+              <div className="w-px h-6 bg-[#D1D9E6] shadow-[1px_0_0_#FFFFFF] dark:bg-white/10 dark:shadow-none" />
               <div className="text-center">
-                <span className="block text-lg md:text-xl font-bold text-[#6448b5] dark:text-[#A78BFA]">
+                <span className="block text-base md:text-lg font-bold text-[#6448b5] dark:text-[#A78BFA]">
                   {formatMetricCount(profile?.followingCount ?? 520, '520')}
                 </span>
                 <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
@@ -440,10 +440,10 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
         {uploadCoverMutation.isError && (
           <div
             role="alert"
-            className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/25 flex items-center justify-between gap-3 text-sm font-medium text-rose-700 dark:text-rose-300"
+            className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/25 flex items-center justify-between gap-3 text-xs md:text-sm font-medium text-rose-700 dark:text-rose-300"
           >
-            <div className="flex items-center gap-2.5">
-              <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0" />
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
               <span>
                 {uploadCoverMutation.error instanceof Error
                   ? uploadCoverMutation.error.message
@@ -464,10 +464,10 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
         {uploadAvatarMutation.isError && (
           <div
             role="alert"
-            className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/25 flex items-center justify-between gap-3 text-sm font-medium text-rose-700 dark:text-rose-300"
+            className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/25 flex items-center justify-between gap-3 text-xs md:text-sm font-medium text-rose-700 dark:text-rose-300"
           >
-            <div className="flex items-center gap-2.5">
-              <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0" />
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
               <span>
                 {uploadAvatarMutation.error instanceof Error
                   ? uploadAvatarMutation.error.message
@@ -489,10 +489,10 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
         {updateProfileMutation.isSuccess && (
           <div
             role="status"
-            className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-between gap-3 text-sm font-medium text-emerald-700 dark:text-emerald-300 transition-all"
+            className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-between gap-3 text-xs md:text-sm font-medium text-emerald-700 dark:text-emerald-300 transition-all"
           >
-            <div className="flex items-center gap-2.5">
-              <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <span>{t('profileSaveSuccess')}</span>
             </div>
             <button
@@ -510,10 +510,10 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
         {updateProfileMutation.isError && (
           <div
             role="alert"
-            className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/25 flex items-center justify-between gap-3 text-sm font-medium text-rose-700 dark:text-rose-300 transition-all"
+            className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/25 flex items-center justify-between gap-3 text-xs md:text-sm font-medium text-rose-700 dark:text-rose-300 transition-all"
           >
-            <div className="flex items-center gap-2.5">
-              <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0" />
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
               <span>
                 {updateProfileMutation.error instanceof Error
                   ? updateProfileMutation.error.message
@@ -535,16 +535,16 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
         <form onSubmit={handleSubmit} className="space-y-6 pt-2">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Row 1: Field 1 - Display Name */}
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <label
                 htmlFor="displayName"
-                className="block text-sm font-semibold text-slate-800 dark:text-slate-200"
+                className="block text-xs font-semibold text-slate-700 dark:text-slate-300 tracking-wide"
               >
                 {t('fieldDisplayName')}
               </label>
               <div className="relative flex items-center">
-                <span className="absolute left-4 text-slate-400 dark:text-slate-500 pointer-events-none">
-                  <User className="w-5 h-5" />
+                <span className="absolute left-3.5 text-slate-400 dark:text-slate-500 pointer-events-none">
+                  <User className="w-4 h-4" />
                 </span>
                 <input
                   id="displayName"
@@ -553,54 +553,54 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Alex Morgan"
                   maxLength={100}
-                  className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-slate-800 dark:text-white font-medium border-none shadow-[inset_3px_3px_6px_#D1D9E6,inset_-3px_-3px_6px_#FFFFFF] dark:shadow-[inset_3px_3px_6px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.02)] focus:ring-2 focus:ring-[#8B70DF]/40 focus:outline-none transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 md:py-3 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-xs md:text-sm text-slate-800 dark:text-white font-medium border-none shadow-[inset_3px_3px_6px_#D1D9E6,inset_-3px_-3px_6px_#FFFFFF] dark:shadow-[inset_3px_3px_6px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.02)] focus:ring-2 focus:ring-[#8B70DF]/40 focus:outline-none transition-all"
                 />
               </div>
             </div>
 
             {/* Row 1: Field 2 - Username Handle */}
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <label
                   htmlFor="username"
-                  className="block text-sm font-semibold text-slate-800 dark:text-slate-200"
+                  className="block text-xs font-semibold text-slate-700 dark:text-slate-300 tracking-wide"
                 >
                   {t('fieldUsername')}
                 </label>
                 {/* Live Availability Badge */}
                 {isUsernameInvalid ? (
-                  <span className="text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-100/70 dark:bg-rose-500/10 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                  <span className="text-[11px] font-semibold text-rose-600 dark:text-rose-400 bg-rose-100/70 dark:bg-rose-500/10 px-2 py-0.5 rounded-full flex items-center gap-1">
                     <AlertCircle className="w-3 h-3" />
                     <span>Min 3 chars</span>
                   </span>
                 ) : shouldCheckUsername ? (
                   isCheckingUsername || isDebouncing ? (
-                    <span className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                    <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1">
                       <RefreshCw className="w-3 h-3 animate-spin text-[#8B70DF]" />
                       <span>Checking...</span>
                     </span>
                   ) : checkData?.available === true ? (
-                    <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-100/70 dark:bg-emerald-500/10 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                    <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-100/70 dark:bg-emerald-500/10 px-2 py-0.5 rounded-full flex items-center gap-1">
                       <Check className="w-3 h-3 stroke-[3]" />
                       <span>{t('badgeAvailable')}</span>
                     </span>
                   ) : checkData?.available === false ? (
-                    <span className="text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-100/70 dark:bg-rose-500/10 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                    <span className="text-[11px] font-semibold text-rose-600 dark:text-rose-400 bg-rose-100/70 dark:bg-rose-500/10 px-2 py-0.5 rounded-full flex items-center gap-1">
                       <AlertCircle className="w-3 h-3" />
                       <span>{t('badgeTaken')}</span>
                     </span>
                   ) : null
                 ) : (
                   profile?.username && (
-                    <span className="text-xs font-medium text-slate-400 dark:text-slate-500">
+                    <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500">
                       Current
                     </span>
                   )
                 )}
               </div>
               <div className="relative flex items-center">
-                <span className="absolute left-4 text-slate-400 dark:text-slate-500 pointer-events-none">
-                  <AtSign className="w-5 h-5" />
+                <span className="absolute left-3.5 text-slate-400 dark:text-slate-500 pointer-events-none">
+                  <AtSign className="w-4 h-4" />
                 </span>
                 <input
                   id="username"
@@ -611,23 +611,23 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
                   }
                   placeholder="alexmorgan"
                   maxLength={30}
-                  className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-slate-800 dark:text-white font-medium border-none shadow-[inset_3px_3px_6px_#D1D9E6,inset_-3px_-3px_6px_#FFFFFF] dark:shadow-[inset_3px_3px_6px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.02)] focus:ring-2 focus:ring-[#8B70DF]/40 focus:outline-none transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 md:py-3 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-xs md:text-sm text-slate-800 dark:text-white font-medium border-none shadow-[inset_3px_3px_6px_#D1D9E6,inset_-3px_-3px_6px_#FFFFFF] dark:shadow-[inset_3px_3px_6px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.02)] focus:ring-2 focus:ring-[#8B70DF]/40 focus:outline-none transition-all"
                 />
               </div>
             </div>
 
             {/* Row 2: Field 3 - Gender */}
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <label
                 htmlFor="gender"
-                className="block text-sm font-semibold text-slate-800 dark:text-slate-200"
+                className="block text-xs font-semibold text-slate-700 dark:text-slate-300 tracking-wide"
               >
                 {t('fieldGender')}
               </label>
               <div className="relative flex items-center">
-                <span className="absolute left-4 text-slate-400 dark:text-slate-500 pointer-events-none">
+                <span className="absolute left-3.5 text-slate-400 dark:text-slate-500 pointer-events-none">
                   <svg
-                    className="w-5 h-5"
+                    className="w-4 h-4"
                     fill="none"
                     stroke="currentColor"
                     strokeLinecap="round"
@@ -643,7 +643,7 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
                   id="gender"
                   value={gender}
                   onChange={(e) => setGender(e.target.value as UserGender)}
-                  className="w-full pl-12 pr-10 py-3.5 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-slate-800 dark:text-white font-medium border-none shadow-[inset_3px_3px_6px_#D1D9E6,inset_-3px_-3px_6px_#FFFFFF] dark:shadow-[inset_3px_3px_6px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.02)] focus:ring-2 focus:ring-[#8B70DF]/40 focus:outline-none transition-all appearance-none cursor-pointer"
+                  className="w-full pl-10 pr-9 py-2.5 md:py-3 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-xs md:text-sm text-slate-800 dark:text-white font-medium border-none shadow-[inset_3px_3px_6px_#D1D9E6,inset_-3px_-3px_6px_#FFFFFF] dark:shadow-[inset_3px_3px_6px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.02)] focus:ring-2 focus:ring-[#8B70DF]/40 focus:outline-none transition-all appearance-none cursor-pointer"
                 >
                   {GENDER_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -651,45 +651,45 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
                     </option>
                   ))}
                 </select>
-                <span className="absolute right-4 text-slate-400 dark:text-slate-500 pointer-events-none">
+                <span className="absolute right-3.5 text-slate-400 dark:text-slate-500 pointer-events-none">
                   <ChevronDown className="w-4 h-4" />
                 </span>
               </div>
             </div>
 
             {/* Row 2: Field 4 - Date of Birth */}
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <label
                 htmlFor="dob"
-                className="block text-sm font-semibold text-slate-800 dark:text-slate-200"
+                className="block text-xs font-semibold text-slate-700 dark:text-slate-300 tracking-wide"
               >
                 {t('fieldDateOfBirth')}
               </label>
               <div className="relative flex items-center">
-                <span className="absolute left-4 text-slate-400 dark:text-slate-500 pointer-events-none">
-                  <Calendar className="w-5 h-5" />
+                <span className="absolute left-3.5 text-slate-400 dark:text-slate-500 pointer-events-none">
+                  <Calendar className="w-4 h-4" />
                 </span>
                 <input
                   id="dob"
                   type="date"
                   value={dateOfBirth}
                   onChange={(e) => setDateOfBirth(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-slate-800 dark:text-white font-medium border-none shadow-[inset_3px_3px_6px_#D1D9E6,inset_-3px_-3px_6px_#FFFFFF] dark:shadow-[inset_3px_3px_6px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.02)] focus:ring-2 focus:ring-[#8B70DF]/40 focus:outline-none transition-all cursor-pointer"
+                  className="w-full pl-10 pr-4 py-2.5 md:py-3 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-xs md:text-sm text-slate-800 dark:text-white font-medium border-none shadow-[inset_3px_3px_6px_#D1D9E6,inset_-3px_-3px_6px_#FFFFFF] dark:shadow-[inset_3px_3px_6px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.02)] focus:ring-2 focus:ring-[#8B70DF]/40 focus:outline-none transition-all cursor-pointer"
                 />
               </div>
             </div>
 
             {/* Row 3: Field 5 - Location */}
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <label
                 htmlFor="location"
-                className="block text-sm font-semibold text-slate-800 dark:text-slate-200"
+                className="block text-xs font-semibold text-slate-700 dark:text-slate-300 tracking-wide"
               >
                 {t('fieldLocation')}
               </label>
               <div className="relative flex items-center">
-                <span className="absolute left-4 text-slate-400 dark:text-slate-500 pointer-events-none">
-                  <MapPin className="w-5 h-5" />
+                <span className="absolute left-3.5 text-slate-400 dark:text-slate-500 pointer-events-none">
+                  <MapPin className="w-4 h-4" />
                 </span>
                 <input
                   id="location"
@@ -698,17 +698,17 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
                   onChange={(e) => setLocation(e.target.value)}
                   placeholder="San Francisco, CA"
                   maxLength={100}
-                  className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-slate-800 dark:text-white font-medium border-none shadow-[inset_3px_3px_6px_#D1D9E6,inset_-3px_-3px_6px_#FFFFFF] dark:shadow-[inset_3px_3px_6px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.02)] focus:ring-2 focus:ring-[#8B70DF]/40 focus:outline-none transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 md:py-3 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-xs md:text-sm text-slate-800 dark:text-white font-medium border-none shadow-[inset_3px_3px_6px_#D1D9E6,inset_-3px_-3px_6px_#FFFFFF] dark:shadow-[inset_3px_3px_6px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.02)] focus:ring-2 focus:ring-[#8B70DF]/40 focus:outline-none transition-all"
                 />
               </div>
             </div>
 
             {/* Row 3: Field 6 - Website / Portfolio */}
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <label
                   htmlFor="website"
-                  className="block text-sm font-semibold text-slate-800 dark:text-slate-200"
+                  className="block text-xs font-semibold text-slate-700 dark:text-slate-300 tracking-wide"
                 >
                   {t('fieldWebsitePortfolio')}
                 </label>
@@ -717,16 +717,16 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
                     href={formattedWebsiteUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs font-semibold text-[#8B70DF] dark:text-[#A78BFA] hover:underline flex items-center gap-1"
+                    className="text-[11px] font-semibold text-[#8B70DF] dark:text-[#A78BFA] hover:underline flex items-center gap-1"
                   >
                     <span>{t('previewLink')}</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
+                    <ExternalLink className="w-3 h-3" />
                   </a>
                 )}
               </div>
               <div className="relative flex items-center">
-                <span className="absolute left-4 text-slate-400 dark:text-slate-500 pointer-events-none">
-                  <Globe className="w-5 h-5" />
+                <span className="absolute left-3.5 text-slate-400 dark:text-slate-500 pointer-events-none">
+                  <Globe className="w-4 h-4" />
                 </span>
                 <input
                   id="website"
@@ -735,21 +735,21 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
                   onChange={(e) => setWebsite(e.target.value)}
                   placeholder="https://alexmorgan.design"
                   maxLength={255}
-                  className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-slate-800 dark:text-white font-medium border-none shadow-[inset_3px_3px_6px_#D1D9E6,inset_-3px_-3px_6px_#FFFFFF] dark:shadow-[inset_3px_3px_6px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.02)] focus:ring-2 focus:ring-[#8B70DF]/40 focus:outline-none transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 md:py-3 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-xs md:text-sm text-slate-800 dark:text-white font-medium border-none shadow-[inset_3px_3px_6px_#D1D9E6,inset_-3px_-3px_6px_#FFFFFF] dark:shadow-[inset_3px_3px_6px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.02)] focus:ring-2 focus:ring-[#8B70DF]/40 focus:outline-none transition-all"
                 />
               </div>
             </div>
 
             {/* Row 4: Field 7 - Bio / About Me (Full Width, NO Mindful Presence) */}
-            <div className="md:col-span-2 space-y-2">
+            <div className="md:col-span-2 space-y-1.5">
               <div className="flex items-center justify-between">
                 <label
                   htmlFor="bio"
-                  className="block text-sm font-semibold text-slate-800 dark:text-slate-200"
+                  className="block text-xs font-semibold text-slate-700 dark:text-slate-300 tracking-wide"
                 >
                   {t('fieldBioAboutMe')}
                 </label>
-                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
                   {bio.length} / 300
                 </span>
               </div>
@@ -761,7 +761,7 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
                   placeholder="Product architect & systems thinker. Crafting calm, intentional human software. ☕🌱"
-                  className="w-full p-4 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-slate-800 dark:text-white font-medium border-none shadow-[inset_3px_3px_6px_#D1D9E6,inset_-3px_-3px_6px_#FFFFFF] dark:shadow-[inset_3px_3px_6px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.02)] focus:ring-2 focus:ring-[#8B70DF]/40 focus:outline-none transition-all resize-none leading-relaxed"
+                  className="w-full p-3.5 rounded-2xl bg-[#EFF3F9] dark:bg-[#12141C] text-xs md:text-sm text-slate-800 dark:text-white font-medium border-none shadow-[inset_3px_3px_6px_#D1D9E6,inset_-3px_-3px_6px_#FFFFFF] dark:shadow-[inset_3px_3px_6px_#0A0D14,inset_-2px_-2px_6px_rgba(255,255,255,0.02)] focus:ring-2 focus:ring-[#8B70DF]/40 focus:outline-none transition-all resize-none leading-relaxed"
                 />
               </div>
             </div>
@@ -773,34 +773,34 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onBack }) => {
           {/* Actions Footer */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-1">
             {/* Privacy auto-sync guarantee note with shield */}
-            <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-xs font-medium">
-              <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-[11px] md:text-xs font-medium">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <span>{t('profileSyncGuarantee')}</span>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex items-center gap-3.5 w-full sm:w-auto justify-end">
+            <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
               <button
                 type="button"
                 onClick={handleCancel}
                 disabled={updateProfileMutation.isPending}
-                className="px-6 py-2.5 rounded-full text-xs md:text-sm font-semibold text-slate-700 dark:text-slate-300 bg-[#EFF3F9] dark:bg-[#252A36] shadow-[-4px_-4px_10px_#FFFFFF,4px_4px_10px_#D1D9E6] dark:shadow-none hover:shadow-[-6px_-6px_12px_#FFFFFF,6px_6px_12px_#C8D2E0] active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+                className="px-5 py-2.5 rounded-full text-xs font-semibold text-slate-700 dark:text-slate-300 bg-[#EFF3F9] dark:bg-[#252A36] shadow-[-4px_-4px_10px_#FFFFFF,4px_4px_10px_#D1D9E6] dark:shadow-none hover:shadow-[-6px_-6px_12px_#FFFFFF,6px_6px_12px_#C8D2E0] active:scale-95 transition-all cursor-pointer disabled:opacity-50"
               >
                 {t('btnCancel')}
               </button>
               <button
                 type="submit"
                 disabled={isSubmitDisabled}
-                className="px-7 py-2.5 rounded-full text-xs md:text-sm font-bold text-white bg-gradient-to-r from-[#8B70DF] to-[#7C3AED] shadow-[0_8px_20px_rgba(139,112,223,0.35),-4px_-4px_10px_#FFFFFF] dark:shadow-[0_8px_20px_rgba(139,112,223,0.35)] hover:shadow-[0_10px_24px_rgba(139,112,223,0.45),-4px_-4px_12px_#FFFFFF] active:scale-98 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                className="px-6 py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#8B70DF] to-[#7C3AED] shadow-[0_8px_20px_rgba(139,112,223,0.35),-4px_-4px_10px_#FFFFFF] dark:shadow-[0_8px_20px_rgba(139,112,223,0.35)] hover:shadow-[0_10px_24px_rgba(139,112,223,0.45),-4px_-4px_12px_#FFFFFF] active:scale-98 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 {updateProfileMutation.isPending ? (
                   <>
-                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
                     <span>{t('savingChanges')}</span>
                   </>
                 ) : (
                   <>
-                    <Check className="w-4 h-4 stroke-[2.5]" />
+                    <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                     <span>{t('btnSaveChanges')}</span>
                   </>
                 )}
