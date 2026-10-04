@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthLayout, AppLayout } from '../layouts';
 import { LoginForm, RegisterForm, ForgotPasswordForm, OAuthCallback } from '../features/auth';
 import { FeedView } from '../features/feed';
+import { SettingsView } from '../features/settings';
 
 export const AppRoutes: React.FC = () => {
   return (
@@ -79,7 +80,7 @@ export const AppRoutes: React.FC = () => {
         path="/profile"
         element={
           <AppLayout>
-            <FeedView />
+            <SettingsView />
           </AppLayout>
         }
       />
@@ -87,7 +88,15 @@ export const AppRoutes: React.FC = () => {
         path="/settings"
         element={
           <AppLayout>
-            <FeedView />
+            <SettingsView />
+          </AppLayout>
+        }
+      />
+      <Route
+        path="/settings/profile"
+        element={
+          <AppLayout>
+            <SettingsView />
           </AppLayout>
         }
       />
